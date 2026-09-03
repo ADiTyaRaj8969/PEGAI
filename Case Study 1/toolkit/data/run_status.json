@@ -1,0 +1,24 @@
+{
+  "_comment": [
+    "Tracks whether each phase's numbers come from your own executed runs or",
+    "from the worked template shipped with this toolkit.",
+    "",
+    "While any value below is false, the report prints a Provenance and",
+    "Declaration notice on page 1. Run the phase, replace the numbers in the",
+    "matching CSV with what you actually measured, set the flag to true, and",
+    "rebuild - the notice shrinks to list only what is still outstanding, and",
+    "disappears entirely when everything is true.",
+    "",
+    "Do not set a flag to true without doing the run. The notice existing is",
+    "far better than a claim that cannot be supported."
+  ],
+  "phase3_baseline_executed": false,
+  "phase4_role_executed": false,
+  "phase5_cot_executed": false,
+  "phase6_react_executed": false,
+  "phase7_audit_executed": false,
+  "phase8_ladder_executed": false,
+  "phase9_multi_llm_executed": false,
+  "phase10_chain_executed": false,
+  "sources_verified": false
+}

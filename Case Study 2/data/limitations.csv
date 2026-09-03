@@ -1,0 +1,36 @@
+id,limitation_1,limitation_2,limitation_3
+P01,Verification absence,Retrieval quality,Context utilisation
+P02,Generalization,Dataset issues,Retrieval quality
+P03,Computational cost,Generalization,Retrieval quality
+P04,Computational cost,Verification absence,Context utilisation
+P05,Retrieval quality,Computational cost,Reproducibility
+P06,Retrieval quality,Generalization,Computational cost
+P07,Context utilisation,Retrieval quality,Verification absence
+P08,Generalization,Retrieval quality,Reproducibility
+P09,Evaluation validity,Dataset issues,Generalization
+P10,Evaluation validity,Generalization,Retrieval quality
+P11,Generalization,Evaluation validity,Context utilisation
+P12,Generalization,Evaluation validity,Dataset issues
+P13,Evaluation validity,Generalization,Dataset issues
+P14,Evaluation validity,Reproducibility,Generalization
+P15,Evaluation validity,Generalization,Reproducibility
+P16,Evaluation validity,Reproducibility,Generalization
+P17,Computational cost,Verification absence,Evaluation validity
+P18,Computational cost,Generalization,Evaluation validity
+P19,Dataset issues,Evaluation validity,Generalization
+P20,Dataset issues,Generalization,Evaluation validity
+P21,Dataset issues,Evaluation validity,Generalization
+P22,Generalization,Verification absence,Retrieval quality
+P23,Computational cost,Generalization,Verification absence
+P24,Computational cost,Retrieval quality,Reproducibility
+P25,Computational cost,Generalization,Verification absence
+P26,Computational cost,Retrieval quality,Verification absence
+P27,Computational cost,Verification absence,Generalization
+P28,Retrieval quality,Computational cost,Verification absence
+P29,Computational cost,Evaluation validity,Retrieval quality
+P30,Evaluation validity,Computational cost,Generalization
+P31,Dataset issues,Generalization,Evaluation validity
+P32,Generalization,Dataset issues,Evaluation validity
+P33,Evaluation validity,Generalization,Reproducibility
+P34,Generalization,Dataset issues,Reproducibility
+P35,Reproducibility,Generalization,Dataset issues

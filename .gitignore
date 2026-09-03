@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Secrets — never commit a real key. .env.example (placeholders only) is tracked.
+.env
+*.key
+secrets.json
+
+# Generated at runtime by the Colab notebooks
+ad_outputs/
+video_out/
+*_submission.zip
+
+# Scratch files from the build scripts
+_*.js
+_*.png
+_*.txt
+_*.json
+_preview/
+_pv/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Already present in this repo at the root path SnakeGame/ , and the local
+# copy carries its own nested .git which git would store as a broken gitlink.
+Snake Game Assignment - 1/

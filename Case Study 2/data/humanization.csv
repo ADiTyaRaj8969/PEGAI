@@ -1,0 +1,10 @@
+section,ai_words,final_words,changes
+Abstract,210,178,"Removed three hedging phrases ('it is important to note', 'plays a crucial role'); replaced generic claims with the corpus figures."
+Introduction,690,612,Cut a paragraph of AI-typical scene-setting; added the specific P09/P10 parametric-memory evidence and two citations.
+Research Methodology,380,470,"Expanded - the AI version was too thin. Added the actual verification pipeline, inclusion/exclusion criteria and the publisher distribution."
+Literature Review,1180,1075,Removed four unsupported claims; regrouped thematically; added explicit limitations to each subsection.
+Comparative Analysis,820,910,Deleted the invalid accuracy leaderboard entirely; wrote the architectural comparison and the methodological caveat by hand.
+Research Trends,520,486,Replaced list-like prose with the inflection-point argument; removed repeated transition phrasing.
+Research Gaps,610,742,"Almost entirely rewritten. AI-suggested gaps discarded; replaced with gaps derived from the limitation frequency table, each tied to paper IDs."
+Future Directions,540,598,Added feasibility assessments and the three novel proposals with their novelty justifications.
+Conclusion,340,302,Rewritten in own language; removed grandiose closing and stated the residual-risk position instead.

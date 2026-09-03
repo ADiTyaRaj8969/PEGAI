@@ -1,0 +1,14 @@
+{
+  "student_name": "Aditya Raj",
+  "enrollment_number": "92301733062",
+  "department": "ICT",
+  "batch": "7EK1'A'",
+  "course": "Prompt Engineering for Generative AI",
+  "case_study": "Case Study 2 - AI-Assisted Literature Review, Research Gap Analysis and Publication-Oriented Review Paper Development",
+  "domain": "Generative AI",
+  "broad_domain": "Artificial Intelligence",
+  "sub_domain": "Generative AI / Large Language Models",
+  "research_area": "Retrieval-Augmented Generation (RAG)",
+  "specific_focus": "Hallucination mitigation and grounding verification in RAG pipelines",
+  "final_topic": "Retrieval-Augmented Generation for Hallucination Mitigation in Large Language Models: A Systematic Review of Architectures, Evaluation and Open Problems"
+}

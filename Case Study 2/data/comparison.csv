@@ -1,0 +1,18 @@
+id,system,trigger,verification,training,dataset,headline,figure_confidence,limitation
+P01,RAG (Sequence/Token),"Single-shot, always",None,Generator + retriever fine-tuned,"NQ, TriviaQA, WebQ, FEVER",NQ Exact Match ~44,check,No support checking; single retrieval round
+P02,DPR,"Single-shot, always",None,Dual-encoder supervised,"NQ, TriviaQA, WebQ, TREC",Large top-20 retrieval gain over BM25,high,Needs labelled pairs; weak out of domain
+P03,REALM,"Single-shot, always",None,Joint retriever + MLM pre-training,"NQ, WebQ, CuratedTrec",Outperforms comparable parametric baselines on open QA,high,Very expensive pre-training
+P04,Fusion-in-Decoder,"Single-shot, always",None,Reader fine-tuned,"NQ, TriviaQA",Accuracy scales with passage count,high,Cost linear in passages; no sufficiency signal
+P05,RETRO,"Chunk-level, always",None,Pre-trained with chunked cross-attention,"MassiveText, Pile, Wikitext103",Small model matches far larger parametric models,high,Frozen retriever; leakage control required
+P07,In-Context RALM,Fixed stride,None,None (frozen LM),"WikiText-103, Pile",Substantial perplexity reduction on a frozen LM,high,Context-window bound; noise hurts
+P08,REPLUG,"Single-shot, always",None,Retriever tuned to LM likelihood,"Pile, NQ, TriviaQA, MMLU",Gains on a black-box LM without model access,high,Needs token likelihoods
+P10,Adaptive retrieval by popularity,Adaptive (popularity threshold),None,None,"PopQA, EntityQuestions","Retrieval helps the long tail, hurts head entities",high,Popularity is a crude confidence proxy
+P22,Retrieval-augmented dialogue,"Per-turn, always",None,Fine-tuned,Wizard of Wikipedia,Marked drop in hallucinated statements vs parametric,high,Partial reduction only; dialogue-specific
+P23,Self-RAG,Adaptive (reflection token),Self-critique of relevance and support,Trained with reflection tokens,"PopQA, PubHealth, ARC, ASQA, Bio",Beats standard RAG and larger instruction-tuned baselines on factuality and citation,high,Needs a specially trained model; critique is fallible
+P24,CRAG,Single-shot + corrective,Retrieval evaluator + web fallback,Lightweight evaluator,"PopQA, Bio, PubHealth, ARC",Improved robustness under poor retrieval; plug-and-play,high,Extra latency; evaluator errors cascade
+P25,FLARE,Adaptive (low token confidence),None explicit,None,"2WikiMultihop, StrategyQA, ASQA, WikiAsp",Beats single-shot and fixed-interval retrieval on long-form tasks,high,Latency; needs likelihood access
+P26,IRCoT,Iterative (per reasoning step),None,None,"HotpotQA, 2WikiMultihop, MuSiQue, IIRC",Large recall and EM gains on multi-hop,high,Expensive; early errors misdirect retrieval
+P27,Chain-of-Verification,No retrieval (parametric),Independent verification questions,None,"Wikidata lists, QUEST, MultiSpanQA",Substantial hallucination reduction via self-verification,high,Shares the model's own misconceptions
+P28,RARR,Post-hoc research,Attribution-based revision,None,"NQ, StrategyQA, QReCC outputs",Improved attribution with high preservation of original text,high,Repairs locally; cannot fix wholly wrong output
+P29,GraphRAG,Global map-reduce over summaries,None,None (LLM index build),Podcast and news corpora,Answers corpus-level questions chunk RAG cannot,high,Costly index; LLM-judge evaluation
+P34,12 RAG variants compared,Varies by variant,Varies by variant,Varies,250 clinical vignettes,Self-reflective RAG lowest hallucination; hybrid retrieval best P@5,high,Single domain; modest sample

@@ -1,0 +1,8 @@
+criterion,unit,claude_opus_5,chatgpt,perplexity,notes
+Accuracy,score_1_5,4,3,4,"Scored against the 12 verified claims in claims.csv. ChatGPT lost points for restating scenario projections as forecasts."
+Reliability (citation quality),score_1_5,4,3,5,"Perplexity returned a resolvable URL for nearly every claim. ChatGPT produced two citations that did not resolve."
+Hallucination rate,percent,8.3,20.8,4.2,"Fabricated or unsupported statements as a share of 24 generated statements per tool, identical V4 prompt."
+Bias control,score_1_5,4,3,3,"Perplexity inherits the slant of whatever ranks highest in search - which is exactly where the viral misinformation lives - so grounding helped accuracy but not balance."
+Evidence usage,score_1_5,4,3,5,"Measured as the share of claims tied to a named primary source rather than to 'studies show'."
+Depth of synthesis,score_1_5,5,4,3,"Perplexity summarised sources well but rarely reconciled the contradictions between them; Claude was strongest at naming the conflict explicitly."
+Overall performance,score_1_5,4.2,3.2,4.0,"Mean of the five 1-5 criteria. No single tool won outright - see the Phase 9 discussion."

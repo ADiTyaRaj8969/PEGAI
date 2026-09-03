@@ -1,0 +1,10 @@
+section,role,technique,human,status
+Abstract,Academic Writer,Role prompting,Rewrote to lead with the corpus size and the specific finding rather than generic framing; added the 2019-2026 span.,Completed
+Introduction,Research Analyst,Chain-of-Thought,Reordered from technique-first to problem-first; added the parametric-memory motivation from P09 and P10 which the draft omitted.,Completed
+Research Methodology,Research Analyst,Structured output,Added the exact CrossRef/arXiv verification procedure and inclusion criteria; the AI draft described a generic PRISMA-style process that did not match what was actually done.,Completed
+Literature Review,Research Reviewer,Prompt chaining,Regrouped from chronological to thematic; removed four claims that no collected paper supported.,Completed
+Comparative Analysis,Technical Analyst,ReAct + negative constraint,Replaced the AI's accuracy leaderboard with an architectural comparison and added the explicit statement that cross-paper numeric ranking is invalid here.,Completed
+Research Trends,Research Analyst,CoT over the evolution table,Added the 2023 inflection argument (retrieval becomes a decision) which the draft presented only as a list of papers.,Completed
+Research Gaps,Research Mentor,CoT + role prompting,Derived entirely from the limitation frequency table by hand; the AI's direct gap suggestions were discarded as ungrounded.,Completed
+Future Directions,Research Consultant,Role prompting,Added feasibility ratings and removed two proposals that restated existing published work as novel.,Completed
+Conclusion,Academic Writer,Prompt chaining,Rewritten in own words; cut the AI's closing flourish about 'transforming the future of AI' and replaced it with the specific residual-risk argument.,Completed

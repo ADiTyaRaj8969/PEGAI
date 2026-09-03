@@ -1,0 +1,9 @@
+pandas>=2.2
+matplotlib>=3.8
+python-docx>=1.1
+anthropic>=1.0
+
+# Optional - DOCX to PDF via Microsoft Word on Windows / macOS.
+# If neither Word nor LibreOffice is installed the build still produces the
+# Markdown and DOCX and simply skips the PDF.
+docx2pdf>=0.1.8

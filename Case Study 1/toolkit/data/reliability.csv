@@ -1,0 +1,7 @@
+source_type,reliability,reason
+Government / Intergovernmental,5,"Published methodology, named authors, versioned revisions and a reputational cost to being wrong. The IEA and LBNL reports state their uncertainty ranges explicitly. Weakness: slow publication cycle, so figures lag the technology by 12-18 months."
+Peer-reviewed research,4,"Method and assumptions are inspectable and were reviewed. Weakness: in this field the key papers are scenario models, not measurements, and their conditional framing is stripped off the moment they enter journalism."
+Quality news reporting,3,"Useful for locating primary sources and for surfacing contested framing. Weakness: strong incentive toward the single striking number, which is the exact mechanism that produced the two central myths in this study."
+Corporate sustainability reports,3,"The only source of operator-side data that exists at all, and methodologies are increasingly disclosed. Weakness: the reporting entity chooses the scope boundary and the accounting basis, and is not independently audited."
+AI-generated outputs,2,"Excellent at structuring an investigation, generating hypotheses and drafting. Not a source. Under an unconstrained prompt this study measured a 37.5% hallucination rate on factual statements."
+Social media / forums,1,"Occasionally surfaces domain expertise unavailable elsewhere and is useful as a lead generator. Never citable: no accountability, no correction mechanism, and heavy self-selection."

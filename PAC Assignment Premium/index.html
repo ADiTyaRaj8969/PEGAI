@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LectureAI — Prompt Engineering Lecture Note Generator</title>
+  <meta name="description" content="Generate comprehensive, classroom-ready lecture notes using Prompt Engineering techniques powered by Generative AI. Supports role prompting, few-shot, chain prompting, template and iterative refinement." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">&#10022;</span>
+        <span class="logo-text">LectureAI</span>
+      </a>
+      <div class="nav-links">
+        <a href="#generator" class="nav-link">Generator</a>
+        <a href="#techniques" class="nav-link">PE Techniques</a>
+        <a href="#history" class="nav-link">History</a>
+        <a href="#evaluation" class="nav-link">Evaluation</a>
+      </div>
+      <button class="btn-api-key" id="btnApiKey" onclick="openApiKeyModal()">
+        <span id="apiKeyStatus" class="dot dot-red"></span>API Key
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-content">
+      <div class="hero-badge">Prompt Engineering &middot; Generative AI &middot; Education</div>
+      <h1 class="hero-title">Generate <span class="gradient-text">Lecture Notes</span><br/>with AI Precision</h1>
+      <p class="hero-subtitle">Design comprehensive, classroom-ready lecture notes using advanced Prompt Engineering techniques &mdash; role prompting, few-shot, chain prompting, template &amp; iterative refinement.</p>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num">6</span><span class="stat-label">PE Techniques</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">&#8734;</span><span class="stat-label">Prompt Versions</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">AI</span><span class="stat-label">Powered</span></div>
+      </div>
+      <a href="#generator" class="btn-primary hero-cta">Start Generating &#8595;</a>
+    </div>
+    <div class="hero-visual">
+      <div class="floating-card fc1"><div class="fc-icon">&#127891;</div><div class="fc-text">Role Prompting</div></div>
+      <div class="floating-card fc2"><div class="fc-icon">&#128279;</div><div class="fc-text">Chain Prompting</div></div>
+      <div class="floating-card fc3"><div class="fc-icon">&#128218;</div><div class="fc-text">Few-Shot</div></div>
+      <div class="floating-card fc4"><div class="fc-icon">&#9881;</div><div class="fc-text">Template Prompting</div></div>
+    </div>
+  </section>
+
+  <!-- GENERATOR -->
+  <section class="section" id="generator">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Step 1</div>
+        <h2 class="section-title">Course &amp; Topic Details</h2>
+        <p class="section-sub">Fill in the course information to generate personalised lecture notes.</p>
+      </div>
+      <div class="gen-grid">
+        <div class="gen-form card">
+          <form id="lectureForm" onsubmit="return false;">
+            <div class="form-row">
+              <div class="form-group"><label for="courseName">Course Name *</label><input type="text" id="courseName" placeholder="e.g. Artificial Intelligence" required /></div>
+              <div class="form-group"><label for="courseCode">Course Code</label><input type="text" id="courseCode" placeholder="e.g. CS601" /></div>
+            </div>
+            <div class="form-group"><label for="courseOutcomes">Course Outcomes (COs)</label><textarea id="courseOutcomes" rows="2" placeholder="CO1: Apply ML algorithms. CO2: Analyse data..."></textarea></div>
+            <div class="form-row">
+              <div class="form-group"><label for="moduleName">Module Name *</label><input type="text" id="moduleName" placeholder="e.g. Module 3 - Search Algorithms" required /></div>
+              <div class="form-group"><label for="moduleNo">Module No.</label><input type="number" id="moduleNo" placeholder="3" min="1" /></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label for="topic">Topic *</label><input type="text" id="topic" placeholder="e.g. Heuristic Search" required /></div>
+              <div class="form-group"><label for="subtopic">Subtopic</label><input type="text" id="subtopic" placeholder="e.g. A* Algorithm" /></div>
+            </div>
+            <div class="form-group"><label for="learningObj">Learning Objectives</label><textarea id="learningObj" rows="2" placeholder="Students will be able to explain, implement and compare A* search..."></textarea></div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="bloomLevel">Bloom's Taxonomy Level</label>
+                <select id="bloomLevel">
+                  <option value="Remember">Remember (L1)</option>
+                  <option value="Understand">Understand (L2)</option>
+                  <option value="Apply" selected>Apply (L3)</option>
+                  <option value="Analyze">Analyze (L4)</option>
+                  <option value="Evaluate">Evaluate (L5)</option>
+                  <option value="Create">Create (L6)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="targetAudience">Target Audience</label>
+                <select id="targetAudience">
+                  <option value="Undergraduate Engineering students (2nd year)">UG Engineering (2nd yr)</option>
+                  <option value="Undergraduate Engineering students (3rd year)" selected>UG Engineering (3rd yr)</option>
+                  <option value="Undergraduate Engineering students (4th year)">UG Engineering (4th yr)</option>
+                  <option value="Postgraduate Engineering students">PG Engineering</option>
+                  <option value="Diploma students">Diploma</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="lectureDuration">Lecture Duration</label>
+                <select id="lectureDuration">
+                  <option value="45 minutes">45 minutes</option>
+                  <option value="1 hour" selected>1 hour</option>
+                  <option value="1.5 hours">1.5 hours</option>
+                  <option value="2 hours">2 hours</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="teachingMethod">Teaching Methodology</label>
+                <select id="teachingMethod">
+                  <option value="Chalk and Talk">Chalk &amp; Talk</option>
+                  <option value="PPT-based lecture" selected>PPT-based</option>
+                  <option value="Problem-based learning">Problem-based</option>
+                  <option value="Flipped classroom">Flipped Classroom</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Include Sections</label>
+              <div class="checkbox-grid">
+                <label class="cb-item"><input type="checkbox" id="incIntro" checked /> Introduction</label>
+                <label class="cb-item"><input type="checkbox" id="incConcepts" checked /> Concepts</label>
+                <label class="cb-item"><input type="checkbox" id="incMath" checked /> Math / Formulas</label>
+                <label class="cb-item"><input type="checkbox" id="incAlgo" checked /> Algorithms</label>
+                <label class="cb-item"><input type="checkbox" id="incExamples" checked /> Worked Examples</label>
+                <label class="cb-item"><input type="checkbox" id="incCaseStudy" checked /> Case Studies</label>
+                <label class="cb-item"><input type="checkbox" id="incQuiz" checked /> Quiz Questions</label>
+                <label class="cb-item"><input type="checkbox" id="incViva" checked /> Viva Questions</label>
+                <label class="cb-item"><input type="checkbox" id="incRef" checked /> References</label>
+                <label class="cb-item"><input type="checkbox" id="incSummary" checked /> Summary</label>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="gen-right">
+          <div class="card technique-card">
+            <h3 class="card-title">&#9889; Prompt Engineering Technique</h3>
+            <p class="card-sub">Select a technique to generate notes. Compare multiple versions for best quality.</p>
+            <div class="technique-list" id="techniqueList">
+              <button class="technique-btn active" data-technique="role" onclick="selectTechnique('role', this)">
+                <span class="t-icon">&#127917;</span>
+                <div class="t-info"><div class="t-name">Role Prompting</div><div class="t-desc">AI acts as an expert professor</div></div>
+                <span class="t-badge">Popular</span>
+              </button>
+              <button class="technique-btn" data-technique="structured" onclick="selectTechnique('structured', this)">
+                <span class="t-icon">&#128208;</span>
+                <div class="t-info"><div class="t-name">Structured Prompting</div><div class="t-desc">Explicit section-by-section structure</div></div>
+              </button>
+              <button class="technique-btn" data-technique="template" onclick="selectTechnique('template', this)">
+                <span class="t-icon">&#128203;</span>
+                <div class="t-info"><div class="t-name">Template Prompting</div><div class="t-desc">Fixed academic template filled by AI</div></div>
+              </button>
+              <button class="technique-btn" data-technique="fewshot" onclick="selectTechnique('fewshot', this)">
+                <span class="t-icon">&#128218;</span>
+                <div class="t-info"><div class="t-name">Few-Shot Prompting</div><div class="t-desc">Examples guide AI output style</div></div>
+              </button>
+              <button class="technique-btn" data-technique="chain" onclick="selectTechnique('chain', this)">
+                <span class="t-icon">&#128279;</span>
+                <div class="t-info"><div class="t-name">Chain Prompting</div><div class="t-desc">Multi-step sequential generation</div></div>
+                <span class="t-badge t-badge-blue">Advanced</span>
+              </button>
+              <button class="technique-btn" data-technique="iterative" onclick="selectTechnique('iterative', this)">
+                <span class="t-icon">&#128260;</span>
+                <div class="t-info"><div class="t-name">Iterative Refinement</div><div class="t-desc">Progressive prompt improvement</div></div>
+                <span class="t-badge t-badge-purple">Best Quality</span>
+              </button>
+            </div>
+            <div class="prompt-preview-section">
+              <div class="prompt-preview-header">
+                <span class="prompt-preview-title">Generated Prompt Preview</span>
+                <button class="btn-copy" onclick="copyPrompt()">Copy</button>
+              </div>
+              <pre id="promptPreview" class="prompt-preview-box">Fill the form and select a technique to see the prompt here.</pre>
+            </div>
+            <div class="gen-actions">
+              <button class="btn-primary btn-generate" id="btnGenerate" onclick="generateNotes()">
+                <span id="generateIcon">&#10022;</span> <span id="generateText">Generate Lecture Notes</span>
+              </button>
+              <button class="btn-secondary" onclick="generateAllVersions()">Compare All Techniques</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUTPUT -->
+  <section class="section" id="outputSection" style="display:none">
+    <div class="container">
+      <div class="output-header">
+        <div>
+          <h2 class="section-title" style="margin-bottom:0.3rem">Generated Lecture Notes</h2>
+          <p class="section-sub" style="margin:0" id="outputMeta">-</p>
+        </div>
+        <div class="output-actions">
+          <button class="btn-secondary" onclick="copyOutput()">&#128203; Copy</button>
+          <button class="btn-secondary" onclick="exportPDF()">&#128196; Export PDF</button>
+          <button class="btn-secondary" onclick="saveToHistory()">&#128190; Save</button>
+          <button class="btn-primary" onclick="regenerateNotes()">&#128260; Regenerate</button>
+        </div>
+      </div>
+      <div class="version-tabs" id="versionTabs"></div>
+      <div class="output-card card" id="outputCard">
+        <div id="outputContent" class="output-content"></div>
+      </div>
+      <div class="refine-panel card" id="refinePanel" style="display:none">
+        <h3 class="card-title">&#128260; Iterative Refinement</h3>
+        <p class="card-sub">Provide feedback to improve the generated lecture notes.</p>
+        <textarea id="refineFeedback" rows="3" placeholder="e.g. Add more worked examples, make explanations simpler, include a flowchart description..."></textarea>
+        <button class="btn-primary" onclick="refineNotes()">Refine Notes</button>
+      </div>
+      <div class="custom-prompt-panel card">
+        <h3 class="card-title">&#128295; Customise Prompt</h3>
+        <p class="card-sub">Edit the prompt below and regenerate for full control.</p>
+        <textarea id="customPromptArea" rows="8" class="mono-area" placeholder="Your custom prompt will appear here after generation..."></textarea>
+        <button class="btn-primary" onclick="regenerateCustom()">Regenerate with Custom Prompt</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PE TECHNIQUES INFO -->
+  <section class="section" id="techniques">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Reference</div>
+        <h2 class="section-title">Prompt Engineering Techniques</h2>
+        <p class="section-sub">Each technique is applied when generating lecture notes. Learn how they work.</p>
+      </div>
+      <div class="techniques-grid">
+        <div class="tech-info-card card">
+          <div class="tic-icon">&#127917;</div><h3>Role Prompting</h3>
+          <p>The AI is assigned a specific persona such as &ldquo;You are an expert professor of Computer Science with 20 years of teaching experience.&rdquo; This contextualises the response style, depth, and tone for academic content.</p>
+          <div class="tic-example"><strong>Example:</strong> &ldquo;As a senior faculty member, explain the A* algorithm to 3rd-year engineering students...&rdquo;</div>
+        </div>
+        <div class="tech-info-card card">
+          <div class="tic-icon">&#128208;</div><h3>Structured Prompting</h3>
+          <p>Prompts include explicit headings, numbered sections, and constraints so the AI produces output in a predictable, well-organised format matching academic standards.</p>
+          <div class="tic-example"><strong>Example:</strong> &ldquo;Generate notes with sections: 1. Objective 2. Theory 3. Algorithm 4. Example...&rdquo;</div>
+        </div>
+        <div class="tech-info-card card">
+          <div class="tic-icon">&#128203;</div><h3>Template Prompting</h3>
+          <p>A pre-defined academic template with placeholder variables is populated by the AI. Ensures consistency across all lecture notes in a course or department.</p>
+          <div class="tic-example"><strong>Example:</strong> &ldquo;Fill this template: TOPIC: [X], LEARNING_OBJ: [Y], CONTENT: [fill]...&rdquo;</div>
+        </div>
+        <div class="tech-info-card card">
+          <div class="tic-icon">&#128218;</div><h3>Few-Shot Prompting</h3>
+          <p>A few high-quality examples of lecture note sections are provided to the AI before the actual request, guiding the model to match the expected format, detail, and style.</p>
+          <div class="tic-example"><strong>Example:</strong> &ldquo;Here are two sample sections [examples]. Now generate a similar section for [topic]...&rdquo;</div>
+        </div>
+        <div class="tech-info-card card">
+          <div class="tic-icon">&#128279;</div><h3>Chain Prompting</h3>
+          <p>A complex lecture note is generated in multiple sequential steps. First generate the outline, then expand each section, then add examples, then add questions. Each step's output feeds the next.</p>
+          <div class="tic-example"><strong>Example:</strong> Step 1: Outline &rarr; Step 2: Theory &rarr; Step 3: Examples &rarr; Step 4: Questions</div>
+        </div>
+        <div class="tech-info-card card">
+          <div class="tic-icon">&#128260;</div><h3>Iterative Refinement</h3>
+          <p>The first generation serves as a draft. Feedback is provided and the AI iteratively improves the notes &mdash; increasing accuracy, depth, and pedagogical effectiveness with each pass.</p>
+          <div class="tic-example"><strong>Example:</strong> Draft &rarr; Review &rarr; &ldquo;Add more examples&rdquo; &rarr; Revised &rarr; Final</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON -->
+  <section class="section" id="comparison" style="display:none">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Analysis</div>
+        <h2 class="section-title">Technique Comparison</h2>
+        <p class="section-sub">Compare lecture notes generated by all 6 prompt engineering techniques side by side.</p>
+      </div>
+      <div id="comparisonGrid" class="comparison-grid"></div>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="section" id="history">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">History</div>
+        <h2 class="section-title">Saved Lecture Notes</h2>
+        <p class="section-sub">Manage and export your previously generated lecture notes.</p>
+      </div>
+      <div id="historyContainer" class="history-list">
+        <div class="empty-state">
+          <div class="empty-icon">&#128194;</div>
+          <p>No saved notes yet. Generate and save lecture notes to see them here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVALUATION -->
+  <section class="section" id="evaluation">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Quality</div>
+        <h2 class="section-title">Content Evaluation Framework</h2>
+        <p class="section-sub">Evaluate AI-generated lecture notes across multiple quality dimensions.</p>
+      </div>
+      <div class="eval-grid">
+        <div class="card">
+          <h3 class="card-title">Evaluation Criteria</h3>
+          <div class="criteria-list">
+            <div class="criterion"><div class="criterion-header"><span class="criterion-icon">&#9989;</span><span class="criterion-name">Technical Accuracy</span></div><p class="criterion-desc">Correctness of concepts, formulas, and algorithms per standard textbooks.</p></div>
+            <div class="criterion"><div class="criterion-header"><span class="criterion-icon">&#128218;</span><span class="criterion-name">Curriculum Alignment</span></div><p class="criterion-desc">Content maps to Bloom's taxonomy level and course outcomes specified.</p></div>
+            <div class="criterion"><div class="criterion-header"><span class="criterion-icon">&#127919;</span><span class="criterion-name">Pedagogical Effectiveness</span></div><p class="criterion-desc">Notes facilitate meaningful student learning and comprehension.</p></div>
+            <div class="criterion"><div class="criterion-header"><span class="criterion-icon">&#128202;</span><span class="criterion-name">Completeness</span></div><p class="criterion-desc">All required sections are present with sufficient detail.</p></div>
+            <div class="criterion"><div class="criterion-header"><span class="criterion-icon">&#128260;</span><span class="criterion-name">Consistency</span></div><p class="criterion-desc">Uniform terminology, notation, and writing style throughout.</p></div>
+            <div class="criterion"><div class="criterion-header"><span class="criterion-icon">&#128161;</span><span class="criterion-name">Readability</span></div><p class="criterion-desc">Content is clear, concise, and appropriate for the target audience.</p></div>
+            <div class="criterion"><div class="criterion-header"><span class="criterion-icon">&#9888;</span><span class="criterion-name">Hallucination Risk</span></div><p class="criterion-desc">AI-generated facts must be cross-verified with standard references.</p></div>
+            <div class="criterion"><div class="criterion-header"><span class="criterion-icon">&#128274;</span><span class="criterion-name">Ethical AI Usage</span></div><p class="criterion-desc">Content respects copyright, avoids plagiarism, and discloses AI assistance.</p></div>
+          </div>
+        </div>
+        <div class="card strategies-card">
+          <h3 class="card-title">&#128737; Responsible AI Strategies</h3>
+          <ul class="strategy-list">
+            <li><span class="s-num">01</span><div><strong>Always validate</strong> AI-generated content against standard textbooks and official documentation before classroom use.</div></li>
+            <li><span class="s-num">02</span><div><strong>Use iterative refinement</strong> &mdash; never accept the first draft. Provide specific feedback to improve accuracy and depth.</div></li>
+            <li><span class="s-num">03</span><div><strong>Disclose AI assistance</strong> to students and maintain transparency about the role of Generative AI in content creation.</div></li>
+            <li><span class="s-num">04</span><div><strong>Protect data privacy</strong> &mdash; do not include personally identifiable information in prompts sent to external AI APIs.</div></li>
+            <li><span class="s-num">05</span><div><strong>Cross-reference citations</strong> &mdash; AI may fabricate citations. Always verify that papers and books cited actually exist.</div></li>
+            <li><span class="s-num">06</span><div><strong>Maintain academic standards</strong> &mdash; AI content should complement, not replace, a faculty member's domain expertise and judgment.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem"><span class="logo-icon">&#10022;</span><span class="logo-text">LectureAI</span></div>
+        <p class="footer-tagline">Prompt Engineering-based Lecture Note Generator</p>
+        <p class="footer-tagline">PAC Premium Learner Assignment &middot; Prompt Engineering Course</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <div class="footer-col-title">PE Techniques</div>
+          <a href="#techniques">Role Prompting</a>
+          <a href="#techniques">Structured Prompting</a>
+          <a href="#techniques">Template Prompting</a>
+          <a href="#techniques">Few-Shot Prompting</a>
+          <a href="#techniques">Chain Prompting</a>
+          <a href="#techniques">Iterative Refinement</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Features</div>
+          <a href="#generator">Lecture Note Generator</a>
+          <a href="#comparison">Version Comparison</a>
+          <a href="#history">Notes History</a>
+          <a href="#evaluation">Quality Evaluation</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom"><p>Built with Generative AI &middot; Powered by Gemini API &middot; PAC Premium Assignment Q2 &middot; Prompt Engineering</p></div>
+  </footer>
+
+  <!-- API KEY MODAL -->
+  <div class="modal-overlay" id="apiModal" onclick="closeApiModalOnOverlay(event)">
+    <div class="modal-box">
+      <div class="modal-header"><h3>&#128273; Configure Gemini API Key</h3><button class="modal-close" onclick="closeApiKeyModal()">&#x2715;</button></div>
+      <p class="modal-desc">Enter your Google Gemini API key to enable AI-powered generation. The key is stored only in your browser's session storage and never sent to any server other than Google's API.</p>
+      <div class="form-group">
+        <label for="apiKeyInput">Gemini API Key</label>
+        <div class="api-key-row">
+          <input type="password" id="apiKeyInput" placeholder="AIza..." />
+          <button class="btn-secondary btn-sm" onclick="toggleApiKeyVisibility()">&#128065;</button>
+        </div>
+      </div>
+      <p class="modal-hint">Get your free API key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a></p>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeApiKeyModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveApiKey()">Save Key</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- LOADING OVERLAY -->
+  <div class="loading-overlay" id="loadingOverlay" style="display:none">
+    <div class="loading-box">
+      <div class="loading-spinner"></div>
+      <p id="loadingText">Generating lecture notes...</p>
+      <p class="loading-sub" id="loadingSubText">Applying prompt engineering technique...</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

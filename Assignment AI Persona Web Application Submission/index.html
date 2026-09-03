@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Career Counsellor — Persona-Based Guidance</title>
+<style>
+  /* ===================================================================
+     All CSS lives here. The assignment requires a single HTML file
+     containing HTML + CSS + JavaScript.
+     =================================================================== */
+  :root{
+    --surface:#fcfcfb; --panel:#ffffff; --page:#f4f5f3;
+    --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+    --line:#e1e0d9; --rule:#c3c2b7;
+    --brand:#1f3864; --brand-soft:#eef3fa;
+    --ok:#0ca30c; --warn:#fab219; --err:#d03b3b;
+    --radius:10px;
+    --font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--font); font-size:15px; line-height:1.55;
+  }
+  header{
+    background:var(--brand); color:#fff; padding:22px 20px 18px;
+    border-bottom:3px solid #16294a;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+  header h1{margin:0 0 4px;font-size:24px;letter-spacing:-.2px}
+  header p{margin:0;opacity:.85;font-size:14px}
+  main{max-width:1120px;margin:0 auto;padding:22px 20px 60px}
+  .card{
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:var(--radius); padding:18px 20px; margin-bottom:18px;
+  }
+  .card h2{
+    margin:0 0 4px; font-size:16px; color:var(--brand);
+    display:flex; align-items:center; gap:8px;
+  }
+  .card h2 .step{
+    background:var(--brand); color:#fff; width:22px; height:22px;
+    border-radius:50%; font-size:12px; display:inline-flex;
+    align-items:center; justify-content:center; flex:0 0 auto;
+  }
+  .hint{color:var(--ink-2); font-size:13px; margin:0 0 14px}
+
+  /* --- API key ------------------------------------------------------ */
+  .keyrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  .keyrow input{flex:1 1 320px}
+  input[type=password],input[type=text],select,textarea{
+    font-family:var(--font); font-size:14px; color:var(--ink);
+    background:var(--surface); border:1px solid var(--rule);
+    border-radius:8px; padding:9px 11px; width:100%;
+  }
+  textarea{resize:vertical; min-height:92px; line-height:1.5}
+  input:focus,textarea:focus,select:focus{
+    outline:2px solid #2a78d6; outline-offset:1px; border-color:#2a78d6;
+  }
+  .note{
+    background:#fff8e8; border:1px solid #e8cf95; border-radius:8px;
+    padding:10px 12px; font-size:13px; color:#6b5310; margin-top:12px;
+  }
+  .note code{background:#00000010;padding:1px 4px;border-radius:4px}
+
+  /* --- persona grid -------------------------------------------------- */
+  .personas{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px}
+  .persona{
+    position:relative; border:1.5px solid var(--line); border-radius:var(--radius);
+    padding:12px 12px 12px 40px; cursor:pointer; background:var(--surface);
+    transition:border-color .12s, background .12s;
+  }
+  .persona:hover{border-color:var(--rule)}
+  .persona input{position:absolute; left:13px; top:14px; width:16px; height:16px; cursor:pointer}
+  .persona .pname{font-weight:600; font-size:14px; display:flex; align-items:center; gap:7px}
+  .persona .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+  .persona .pdesc{font-size:12.5px; color:var(--ink-2); margin-top:3px}
+  .persona.on{border-color:#2a78d6; background:#f5f9ff}
+  .persona .cardlink{
+    font-size:12px; color:#2a78d6; margin-top:7px; display:inline-block;
+    text-decoration:underline; cursor:pointer;
+  }
+
+  /* --- buttons ------------------------------------------------------- */
+  .btn{
+    font-family:var(--font); font-size:14px; font-weight:600; cursor:pointer;
+    border-radius:8px; padding:10px 18px; border:1px solid transparent;
+  }
+  .btn.primary{background:var(--brand); color:#fff}
+  .btn.primary:hover{background:#16294a}
+  .btn.primary:disabled{background:#9aa4b5; cursor:not-allowed}
+  .btn.ghost{background:var(--surface); border-color:var(--rule); color:var(--ink-2)}
+  .btn.ghost:hover{background:#eeeeea}
+  .btn.small{font-size:12.5px; padding:6px 11px; font-weight:500}
+  .actions{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:14px}
+
+  .samples{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+
+  /* --- messages ------------------------------------------------------ */
+  .msg{border-radius:8px; padding:10px 13px; font-size:14px; margin-top:12px; display:none}
+  .msg.show{display:block}
+  .msg.error{background:#fdecec; border:1px solid #e9b5b5; color:#8d2020}
+  .msg.info{background:var(--brand-soft); border:1px solid #b9cbe4; color:#1f3864}
+
+  /* --- results ------------------------------------------------------- */
+  .meta{
+    display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+    margin-bottom:14px; font-size:12.5px;
+  }
+  .badge{
+    background:var(--brand-soft); color:var(--brand); border:1px solid #b9cbe4;
+    border-radius:999px; padding:3px 11px; font-weight:600;
+  }
+  .badge.ok{background:#eaf7ea;border-color:#a8dca8;color:#136b13}
+
+  .answer{border:1px solid var(--line); border-radius:var(--radius); margin-bottom:14px; overflow:hidden}
+  .answer .head{
+    padding:11px 15px; font-weight:600; font-size:14.5px; color:#fff;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .answer .head .tag{
+    font-size:11.5px; font-weight:600; background:#ffffff2e;
+    padding:2px 9px; border-radius:999px;
+  }
+  .answer .body{padding:14px 16px; font-size:14.5px}
+  .answer .body p{margin:0 0 10px}
+  .answer .body ul{margin:0 0 10px; padding-left:20px}
+  .answer .body li{margin-bottom:4px}
+  .answer .body h4{margin:14px 0 6px; font-size:14px; color:var(--brand)}
+  .answer.out .body{background:#fffaf0}
+
+  table{border-collapse:collapse; width:100%; font-size:13.5px; margin-top:6px}
+  th,td{border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top}
+  th{background:var(--brand); color:#fff; font-weight:600}
+  tbody tr:nth-child(even){background:#f7f7f5}
+  td.rowhead{background:#f0f2f6; font-weight:600; width:170px}
+
+  details{margin-top:12px; border:1px solid var(--line); border-radius:8px; background:var(--surface)}
+  details summary{
+    cursor:pointer; padding:9px 13px; font-size:13.5px;
+    font-weight:600; color:var(--brand);
+  }
+  details pre{
+    margin:0; padding:13px; background:#f4f4f2; border-top:1px solid var(--line);
+    font-size:12px; line-height:1.5; white-space:pre-wrap; word-break:break-word;
+    max-height:420px; overflow:auto; font-family:Consolas,monospace;
+  }
+
+  .spinner{
+    width:15px;height:15px;border:2.5px solid #ffffff5c;border-top-color:#fff;
+    border-radius:50%;display:inline-block;animation:spin .7s linear infinite;
+    vertical-align:-2px;margin-right:7px
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* --- prompt card modal --------------------------------------------- */
+  .overlay{
+    display:none; position:fixed; inset:0; background:#0b0b0b99; z-index:50;
+    align-items:center; justify-content:center; padding:22px;
+  }
+  .overlay.show{display:flex}
+  .modal{
+    background:#fff; border-radius:12px; max-width:620px; width:100%;
+    max-height:85vh; overflow:auto; padding:22px 24px;
+  }
+  .modal h3{margin:0 0 12px; color:var(--brand); font-size:17px}
+  footer{color:var(--muted); font-size:12.5px; text-align:center; padding:6px 0 30px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>AI Career Counsellor</h1>
+    <p>Persona-based career guidance powered by the Gemini API &middot;
+       Aditya Raj &middot; 92301733062 &middot; ICT &middot; 7EK1'A'</p>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ 1. API KEY ============ -->
+  <section class="card">
+    <h2><span class="step">1</span> Gemini API key</h2>
+    <p class="hint">
+      The key is entered here at runtime and kept only in this browser tab's
+      <code>sessionStorage</code>. It is never written into the source file, so
+      this project can be published to GitHub safely.
+    </p>
+    <div class="keyrow">
+      <input type="password" id="apiKey" placeholder="Paste your Gemini API key (AIza...)"
+             autocomplete="off" spellcheck="false" />
+      <select id="model" style="flex:0 1 230px">
+        <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+        <option value="gemini-2.0-flash-lite">gemini-2.0-flash-lite</option>
+        <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+        <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+      </select>
+      <button class="btn ghost small" id="btnModels" type="button">Load my models</button>
+    </div>
+    <div class="note">
+      <strong>Get a free key:</strong> <code>aistudio.google.com/app/apikey</code>.
+      &ldquo;Load my models&rdquo; asks the API which models your key can actually
+      use and refills the dropdown &mdash; useful because model availability
+      differs between accounts and regions.
+    </div>
+    <div class="msg" id="keyMsg"></div>
+  </section>
+
+  <!-- ============ 2. PERSONAS ============ -->
+  <section class="card">
+    <h2><span class="step">2</span> Select persona(s)</h2>
+    <p class="hint">
+      Pick one for a single perspective, or several to compare them.
+      Each persona is defined by a six-element Prompt Card &mdash; click
+      &ldquo;View Prompt Card&rdquo; on any persona to see exactly what is sent.
+    </p>
+    <div class="personas" id="personas"></div>
+    <div class="actions">
+      <button class="btn ghost small" id="btnAll" type="button">Select all</button>
+      <button class="btn ghost small" id="btnNone" type="button">Clear</button>
+    </div>
+  </section>
+
+  <!-- ============ 3. QUESTION ============ -->
+  <section class="card">
+    <h2><span class="step">3</span> Your question</h2>
+    <p class="hint">Ask anything about your career path, skills, studies or placements.</p>
+    <textarea id="question" placeholder="e.g. Should I prepare for placements or pursue higher studies?"></textarea>
+    <div class="samples" id="samples"></div>
+    <div class="actions">
+      <button class="btn primary" id="btnAsk" type="button">Get Career Advice</button>
+      <button class="btn ghost" id="btnPrompt" type="button">Preview constructed prompt</button>
+    </div>
+    <div class="msg" id="askMsg"></div>
+  </section>
+
+  <!-- ============ 4. RESULTS ============ -->
+  <section class="card" id="resultCard" style="display:none">
+    <h2><span class="step">4</span> Responses</h2>
+    <div class="meta" id="meta"></div>
+    <div id="answers"></div>
+    <div id="comparison"></div>
+    <details id="rawWrap" style="display:none">
+      <summary>Prompt actually sent to Gemini (single request)</summary>
+      <pre id="rawPrompt"></pre>
+    </details>
+  </section>
+
+  <footer>
+    Built for the AI Persona Web Application assignment &middot;
+    Prompt Engineering for Generative AI
+  </footer>
+</main>
+
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+
+<script>
+/* =====================================================================
+   AI CAREER COUNSELLOR
+   ---------------------------------------------------------------------
+   Design decisions that matter for the assignment:
+
+   1. Each persona is a six-element PROMPT CARD (Role, Audience, Context,
+      Format, Constraints, Language). Nothing is hard-coded as a canned
+      answer - every word shown comes from Gemini.
+
+   2. When several personas are selected we send ONE request containing
+      all of their prompt cards, and ask for a structured JSON reply with
+      one entry per persona. N personas therefore cost 1 API call, not N.
+
+   3. Out-of-scope questions are handled by the model itself: each persona
+      must set inScope=false and say it does not know, rather than
+      answering outside its speciality.
+   ===================================================================== */
+
+/* ---------- Persona definitions: the six-element Prompt Cards -------- */
+const PERSONAS = [
+  {
+    id: "technical",
+    name: "Technical Career Counsellor",
+    blurb: "AI/ML, programming, projects, technical skills",
+    colour: "#2a78d6",
+    card: {
+      role: "Senior Technical Career Counsellor specialising in Artificial Intelligence, Machine Learning and Software Engineering, with 12 years of industry mentoring experience",
+      audience: "Undergraduate ICT and Computer Science students in India preparing for technical roles",
+      context: "The student wants concrete technical direction: which skills to build, in what order, and which projects will actually demonstrate ability to an employer. Assume the student has limited time and must prioritise.",
+      format: "Recommendation → Skills to Develop (ordered) → Project Suggestions (2-3 concrete ideas) → Career Roadmap with rough timeline",
+      constraints: "Give practical, realistic advice. Never guarantee jobs, packages or salaries. Do not invent statistics or company hiring data. Prefer widely available free or low-cost resources. If the question is not about technical skills, projects or engineering careers, say you do not know and suggest which counsellor to ask.",
+      language: "Simple English, short sentences, minimal jargon; expand any acronym on first use"
+    }
+  },
+  {
+    id: "hr",
+    name: "HR & Placement Counsellor",
+    blurb: "Resume, interviews, employability, placements",
+    colour: "#eb6834",
+    card: {
+      role: "Campus Placement Officer and HR Recruiter who has screened thousands of fresher applications and sat on interview panels",
+      audience: "Final-year engineering students entering campus placement season",
+      context: "The student is judged by recruiters in minutes. Focus on how the student is perceived on paper and in the room: resume signal, communication, interview structure, and readiness timeline before the placement drive.",
+      format: "Assessment of current position → Resume & Profile Fixes → Interview Preparation Plan → 4-week Action Timeline",
+      constraints: "Be direct about weaknesses but never discouraging. Never promise selection, offers or salary figures. Do not invent company-specific hiring criteria. Advice must be achievable before the next placement season. If the question is not about employability, hiring or placement preparation, say you do not know and name the right counsellor.",
+      language: "Simple, professional English with a warm and encouraging tone"
+    }
+  },
+  {
+    id: "academic",
+    name: "Academic & Research Counsellor",
+    blurb: "Higher studies, MS/M.Tech, PhD, research, publications",
+    colour: "#1baf7a",
+    card: {
+      role: "Professor and Research Supervisor who guides students on higher studies, admissions and early research careers",
+      audience: "Students considering postgraduate study or a research career in India or abroad",
+      context: "The student is weighing further study against immediate employment. Consider entrance requirements (GATE, GRE, IELTS), research fit, funding and scholarships, publication experience, and the realistic timeline of applications.",
+      format: "Academic Assessment → Higher Study Options with entry requirements → Research Preparation Steps → Application Timeline",
+      constraints: "Present higher study honestly, including its cost and opportunity cost. Never claim admission or funding is assured. Do not invent university rankings, deadlines or cut-offs; advise the student to verify these on official pages. If the question is not about higher studies, research or academics, say you do not know and point to the right counsellor.",
+      language: "Clear academic English that a second-year student can follow"
+    }
+  },
+  {
+    id: "startup",
+    name: "Entrepreneurship Counsellor",
+    blurb: "Startups, product, freelancing, validation",
+    colour: "#7a4fd0",
+    card: {
+      role: "Startup Mentor and Incubator Advisor who has guided student founders from idea to first paying customer",
+      audience: "Students considering building a product, freelancing, or starting a venture instead of or alongside a job",
+      context: "The student may have technical skill but no business exposure. Emphasise validating demand before building, the smallest testable version, early revenue, and how to reduce personal risk while still a student.",
+      format: "Reality Check → Idea Validation Steps → Minimum Viable Product plan → First-Revenue Path → Risk Management",
+      constraints: "Be honest that most student ventures fail; do not romanticise entrepreneurship. Never promise funding, revenue or success. Do not invent market sizes or investor names. Always include the lower-risk option of freelancing or a job alongside building. If the question is not about ventures, products or freelancing, say you do not know and name the right counsellor.",
+      language: "Plain, practical English with no startup buzzwords"
+    }
+  },
+  {
+    id: "govt",
+    name: "Government & PSU Counsellor",
+    blurb: "GATE, PSU recruitment, civil services, banking",
+    colour: "#c0392b",
+    card: {
+      role: "Competitive Examination Counsellor specialising in GATE, PSU recruitment, civil services and banking examinations for engineering graduates",
+      audience: "Engineering students considering public-sector careers rather than private industry",
+      context: "Public-sector paths run on fixed examination calendars and long preparation cycles, which is a very different decision from private placement. Consider eligibility, attempt limits, preparation duration, and how this choice interacts with campus placements.",
+      format: "Suitability Check → Relevant Examinations with eligibility → Preparation Strategy → Timeline and Backup Plan",
+      constraints: "Be realistic about competition ratios and preparation time. Never guarantee selection. Do not invent exam dates, vacancy counts or cut-off marks; tell the student to confirm on official notifications. Always advise keeping a parallel backup option. If the question is not about government or public-sector careers, say you do not know and name the right counsellor.",
+      language: "Simple English suited to an Indian student audience"
+    }
+  }
+];
+
+const SAMPLES = [
+  "Should I prepare for placements or pursue higher studies?",
+  "I know Python but do not have any projects. What should I do?",
+  "Should I become an AI Engineer, Data Scientist or Software Developer?",
+  "What is the best recipe for pizza?"
+];
+
+/* ---------- tiny helpers -------------------------------------------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g,
+  c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+
+function show(el, text, kind){
+  el.className = "msg show " + kind;
+  el.innerHTML = text;
+}
+function hide(el){ el.className = "msg"; }
+
+/* Render a small, safe subset of markdown. Everything is escaped first,
+   so model output cannot inject HTML. */
+function fmt(text){
+  const lines = esc(text).split("\n");
+  let html = "", list = false;
+  for (let raw of lines){
+    const line = raw.trim();
+    if (!line){ if (list){ html += "</ul>"; list = false; } continue; }
+    if (/^[-*•]\s+/.test(line)){
+      if (!list){ html += "<ul>"; list = true; }
+      html += "<li>" + inline(line.replace(/^[-*•]\s+/, "")) + "</li>";
+      continue;
+    }
+    if (list){ html += "</ul>"; list = false; }
+    if (/^#{1,4}\s+/.test(line)) html += "<h4>" + inline(line.replace(/^#{1,4}\s+/, "")) + "</h4>";
+    else if (/^[A-Z][A-Za-z &/-]{2,40}:$/.test(line)) html += "<h4>" + inline(line) + "</h4>";
+    else html += "<p>" + inline(line) + "</p>";
+  }
+  if (list) html += "</ul>";
+  return html;
+}
+const inline = s => s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+
+/* ---------- build the persona UI ------------------------------------ */
+function renderPersonas(){
+  $("personas").innerHTML = PERSONAS.map(p => `
+    <label class="persona" data-id="${p.id}">
+      <input type="checkbox" value="${p.id}" />
+      <span class="pname"><span class="dot" style="background:${p.colour}"></span>${esc(p.name)}</span>
+      <span class="pdesc">${esc(p.blurb)}</span>
+      <span class="cardlink" data-card="${p.id}">View Prompt Card</span>
+    </label>`).join("");
+
+  $("personas").addEventListener("change", e => {
+    if (e.target.type === "checkbox")
+      e.target.closest(".persona").classList.toggle("on", e.target.checked);
+  });
+  $("personas").addEventListener("click", e => {
+    const id = e.target.dataset.card;
+    if (!id) return;
+    e.preventDefault(); e.stopPropagation();
+    openCard(PERSONAS.find(p => p.id === id));
+  });
+}
+
+function openCard(p){
+  const rows = [
+    ["Role", p.card.role], ["Audience", p.card.audience],
+    ["Context", p.card.context], ["Format", p.card.format],
+    ["Constraints", p.card.constraints], ["Language", p.card.language]
+  ].map(([k, v]) => `<tr><td class="rowhead">${k}</td><td>${esc(v)}</td></tr>`).join("");
+  $("modal").innerHTML =
+    `<h3>Prompt Card — ${esc(p.name)}</h3><table><tbody>${rows}</tbody></table>
+     <div class="actions"><button class="btn ghost small" id="btnClose">Close</button></div>`;
+  $("overlay").classList.add("show");
+  $("btnClose").onclick = () => $("overlay").classList.remove("show");
+}
+$("overlay").addEventListener("click", e => {
+  if (e.target.id === "overlay") $("overlay").classList.remove("show");
+});
+
+function renderSamples(){
+  $("samples").innerHTML = SAMPLES.map((s, i) =>
+    `<button class="btn ghost small" data-s="${i}">${i === 3 ? "Off-topic test: " : ""}${esc(s.slice(0, 46))}${s.length > 46 ? "…" : ""}</button>`
+  ).join("");
+  $("samples").onclick = e => {
+    const i = e.target.dataset.s;
+    if (i !== undefined){ $("question").value = SAMPLES[i]; hide($("askMsg")); }
+  };
+}
+
+const selected = () => [...document.querySelectorAll("#personas input:checked")]
+  .map(i => PERSONAS.find(p => p.id === i.value));
+
+/* ---------- PROMPT CONSTRUCTION ------------------------------------- */
+/* One prompt, all selected personas, structured JSON reply. */
+function buildPrompt(list, question){
+  const blocks = list.map((p, i) => `
+### PERSONA ${i + 1} — id: "${p.id}" — name: "${p.name}"
+Role:        ${p.card.role}
+Audience:    ${p.card.audience}
+Context:     ${p.card.context}
+Format:      ${p.card.format}
+Constraints: ${p.card.constraints}
+Language:    ${p.card.language}`).join("\n");
+
+  return `You are simulating ${list.length} independent career counsellor${list.length > 1 ? "s" : ""}.
+Each is defined by a Prompt Card below. Answer the student's question once
+from EACH persona, staying strictly inside that persona's role, format,
+constraints and language.
+${blocks}
+
+### STUDENT'S QUESTION
+"${question}"
+
+### RULES
+1. Produce exactly one entry per persona listed above, using the same "id".
+2. Each persona must answer only from its own speciality and follow its own
+   Format field as the structure of "answer".
+3. The personas must genuinely differ. Do not paraphrase one answer ${list.length > 1 ? "across the others" : ""}.
+   Different priorities, different recommended actions, different reasoning.
+4. If the question falls outside a persona's speciality, that persona must set
+   "inScope": false and its "answer" must say it does not know and name which
+   counsellor to ask instead. Do not answer outside your speciality.
+5. Obey every Constraint. Never guarantee jobs, salaries, admission or funding.
+   Never invent statistics, deadlines, cut-offs, rankings or company names.
+6. "mainRecommendation", "priority" and "suggestedAction" must each be at most
+   6 words - they populate a side-by-side comparison table.
+7. Keep "answer" under 280 words. Use short paragraphs and "- " bullets.
+
+Return JSON only, matching the required schema.`;
+}
+
+const SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    responses: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          id:                 { type: "STRING" },
+          answer:             { type: "STRING" },
+          mainRecommendation: { type: "STRING" },
+          priority:           { type: "STRING" },
+          suggestedAction:    { type: "STRING" },
+          inScope:            { type: "BOOLEAN" }
+        },
+        required: ["id","answer","mainRecommendation","priority","suggestedAction","inScope"]
+      }
+    }
+  },
+  required: ["responses"]
+};
+
+/* ---------- Gemini call --------------------------------------------- */
+async function callGemini(prompt){
+  const key = $("apiKey").value.trim();
+  const model = $("model").value;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 4096,
+        responseMimeType: "application/json",
+        responseSchema: SCHEMA
+      }
+    })
+  });
+
+  if (!res.ok){
+    let detail = "";
+    try { detail = (await res.json())?.error?.message || ""; } catch {}
+    if (res.status === 400 && /API key not valid/i.test(detail))
+      throw new Error("That API key was rejected. Check it at aistudio.google.com/app/apikey.");
+    if (res.status === 403) throw new Error("Access denied (403). The key may lack permission for this model.");
+    if (res.status === 404) throw new Error(`Model "${model}" is not available to this key. Try "Load my models".`);
+    if (res.status === 429) throw new Error("Rate limit reached (429). Wait a moment and try again.");
+    if (res.status >= 500)  throw new Error(`Gemini server error (${res.status}). Try again shortly.`);
+    throw new Error(`Request failed (${res.status}). ${detail}`);
+  }
+
+  const data = await res.json();
+  const cand = data?.candidates?.[0];
+  if (!cand) throw new Error("The API returned no candidates. The prompt may have been blocked.");
+  if (cand.finishReason === "SAFETY") throw new Error("The response was blocked by a safety filter. Try rephrasing.");
+  if (cand.finishReason === "MAX_TOKENS") throw new Error("The reply hit the token limit. Select fewer personas or shorten the question.");
+
+  const text = (cand.content?.parts || []).map(p => p.text || "").join("");
+  if (!text.trim()) throw new Error("The API returned an empty response.");
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    const m = text.match(/\{[\s\S]*\}/);
+    if (m){ try { return JSON.parse(m[0]); } catch {} }
+    throw new Error("Could not parse the model's JSON reply.");
+  }
+}
+
+/* ---------- rendering ------------------------------------------------ */
+function renderResults(list, parsed, ms, prompt){
+  const byId = Object.fromEntries((parsed.responses || []).map(r => [r.id, r]));
+
+  $("meta").innerHTML =
+    `<span class="badge ok">1 API request for ${list.length} persona${list.length > 1 ? "s" : ""}</span>` +
+    `<span class="badge">${$("model").value}</span>` +
+    `<span class="badge">${(ms / 1000).toFixed(1)} s</span>` +
+    `<span class="badge">structured JSON</span>`;
+
+  $("answers").innerHTML = list.map(p => {
+    const r = byId[p.id];
+    if (!r) return `<div class="answer"><div class="head" style="background:${p.colour}">
+        ${esc(p.name)}</div><div class="body"><p>No response was returned for this persona.</p></div></div>`;
+    const out = r.inScope === false;
+    return `<div class="answer ${out ? "out" : ""}">
+      <div class="head" style="background:${p.colour}">
+        <span>${esc(p.name)}</span>
+        <span class="tag">${out ? "Outside my speciality" : "In scope"}</span>
+      </div>
+      <div class="body">${fmt(r.answer)}</div>
+    </div>`;
+  }).join("");
+
+  // Comparison table - only meaningful with 2+ personas
+  const inScope = list.filter(p => byId[p.id] && byId[p.id].inScope !== false);
+  if (inScope.length >= 2){
+    const row = (label, field) =>
+      `<tr><td class="rowhead">${label}</td>` +
+      inScope.map(p => `<td>${esc(byId[p.id][field])}</td>`).join("") + "</tr>";
+    $("comparison").innerHTML = `
+      <h4 style="color:var(--brand);margin:20px 0 4px">Side-by-side comparison</h4>
+      <table><thead><tr><th>Aspect</th>${inScope.map(p =>
+        `<th>${esc(p.name.replace(" Counsellor", ""))}</th>`).join("")}</tr></thead>
+      <tbody>${row("Main Recommendation","mainRecommendation")}${row("Priority","priority")}${row("Suggested Action","suggestedAction")}</tbody></table>`;
+  } else {
+    $("comparison").innerHTML = inScope.length === 1
+      ? `<p class="hint" style="margin-top:14px">Select two or more personas to see a side-by-side comparison.</p>` : "";
+  }
+
+  $("rawPrompt").textContent = prompt;
+  $("rawWrap").style.display = "block";
+  $("resultCard").style.display = "block";
+  $("resultCard").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/* ---------- validation + main action --------------------------------- */
+function validate(){
+  const list = selected(), q = $("question").value.trim(), key = $("apiKey").value.trim();
+  if (!key)        return { ok:false, msg:"Please enter your Gemini API key in step 1." };
+  if (!list.length) return { ok:false, msg:"Please select at least one persona." };
+  if (!q)          return { ok:false, msg:"Please enter your career-related question." };
+  if (q.length < 8) return { ok:false, msg:"Please write a slightly longer question so the counsellors have something to work with." };
+  return { ok:true, list, q };
+}
+
+$("btnAsk").onclick = async () => {
+  hide($("askMsg"));
+  const v = validate();
+  if (!v.ok) return show($("askMsg"), esc(v.msg), "error");
+
+  const prompt = buildPrompt(v.list, v.q);
+  const btn = $("btnAsk");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Asking ' + v.list.length + ' counsellor' + (v.list.length > 1 ? 's' : '') + '…';
+
+  const t0 = performance.now();
+  try {
+    const parsed = await callGemini(prompt);
+    renderResults(v.list, parsed, performance.now() - t0, prompt);
+    sessionStorage.setItem("gemini_key", $("apiKey").value.trim());
+  } catch (err){
+    show($("askMsg"), "<strong>Could not get advice.</strong> " + esc(err.message), "error");
+    $("resultCard").style.display = "none";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Get Career Advice";
+  }
+};
+
+$("btnPrompt").onclick = () => {
+  const list = selected(), q = $("question").value.trim();
+  if (!list.length) return show($("askMsg"), "Select at least one persona to preview its prompt.", "error");
+  $("modal").innerHTML =
+    `<h3>Constructed prompt (${list.length} persona${list.length > 1 ? "s" : ""}, 1 request)</h3>
+     <pre style="white-space:pre-wrap;font-size:12px;background:#f4f4f2;padding:12px;border-radius:8px;max-height:60vh;overflow:auto">${
+       esc(buildPrompt(list, q || "<your question goes here>"))}</pre>
+     <div class="actions"><button class="btn ghost small" id="btnClose">Close</button></div>`;
+  $("overlay").classList.add("show");
+  $("btnClose").onclick = () => $("overlay").classList.remove("show");
+};
+
+/* ---------- model discovery ------------------------------------------ */
+$("btnModels").onclick = async () => {
+  const key = $("apiKey").value.trim();
+  hide($("keyMsg"));
+  if (!key) return show($("keyMsg"), "Enter your API key first.", "error");
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`);
+    if (!res.ok) throw new Error(`Could not list models (${res.status}). Check the key.`);
+    const models = ((await res.json()).models || [])
+      .filter(m => (m.supportedGenerationMethods || []).includes("generateContent"))
+      .map(m => m.name.replace("models/", ""))
+      .filter(n => n.startsWith("gemini"))
+      .sort();
+    if (!models.length) throw new Error("No text-generation models are available to this key.");
+    $("model").innerHTML = models.map(n => `<option value="${n}">${n}</option>`).join("");
+    const pref = models.find(n => n.includes("flash")) || models[0];
+    $("model").value = pref;
+    show($("keyMsg"), `Key works. ${models.length} models available — selected <strong>${esc(pref)}</strong>.`, "info");
+    sessionStorage.setItem("gemini_key", key);
+  } catch (err){
+    show($("keyMsg"), esc(err.message), "error");
+  }
+};
+
+$("btnAll").onclick  = () => document.querySelectorAll("#personas input").forEach(i => {
+  i.checked = true; i.closest(".persona").classList.add("on"); });
+$("btnNone").onclick = () => document.querySelectorAll("#personas input").forEach(i => {
+  i.checked = false; i.closest(".persona").classList.remove("on"); });
+
+/* ---------- init ------------------------------------------------------ */
+renderPersonas();
+renderSamples();
+const saved = sessionStorage.getItem("gemini_key");
+if (saved) $("apiKey").value = saved;
+document.querySelector('#personas input[value="technical"]').click();
+</script>
+</body>
+</html>
