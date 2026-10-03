@@ -1,6 +1,14 @@
-# Phase 2 — Hidden Solver Pass
+<div align="center">
 
-**11:30 – 11:45 · Prompts: `SOLVER_PROMPT`, `REPAIR_PROMPT` · Techniques: hidden chain-of-thought + structured output**
+# Phase 2 · Hidden Solver Pass
+
+[![Time](https://img.shields.io/badge/11%3A30%20–%2011%3A45-0b3d62?style=flat-square)](#)
+[![Prompts](https://img.shields.io/badge/prompts-SOLVER__PROMPT%20·%20REPAIR__PROMPT-1a7f64?style=flat-square)](#)
+[![Technique](https://img.shields.io/badge/technique-hidden%20CoT%20%2B%20structured%20output-7b2d8e?style=flat-square)](#)
+
+</div>
+
+---
 
 ## Goal
 
@@ -10,6 +18,7 @@ diagnoser compares *to* a known set of steps.
 
 ## The Core Idea
 
+> [!IMPORTANT]
 > You cannot reliably suppress what you have not identified.
 
 A single-prompt tutor derives the answer somewhere inside the same text it shows the student, so
@@ -223,4 +232,8 @@ assert inj.answer_numeric == 60                              # FR-6.2 holds
 - [ ] Solution cached per problem
 - [ ] Logged in [PROMPT_HISTORY.md](PROMPT_HISTORY.md) at 11:30
 
-**Next:** [Phase 3 — Hint Ladder](PHASE_3_HINT_LADDER.md)
+<div align="center">
+
+[← Phase 1 · V1 Baseline](PHASE_1_BASELINE.md) · [Index](PHASES_INDEX.md) · [Phase 3 · Hint Ladder →](PHASE_3_HINT_LADDER.md)
+
+</div>

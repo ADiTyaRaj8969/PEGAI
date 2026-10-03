@@ -1,7 +1,20 @@
-# Phase 4 — Leak Guard
+<div align="center">
 
-**12:05 – 12:25 · Prompt: `LEAK_CRITIQUE_PROMPT` · Technique: self-critique / targeted regeneration**
-**This phase is the project. Do not cut it.**
+# Phase 4 · Leak Guard
+
+[![Time](https://img.shields.io/badge/12%3A05%20–%2012%3A25-0b3d62?style=flat-square)](#)
+[![Prompt](https://img.shields.io/badge/prompt-LEAK__CRITIQUE__PROMPT-1a7f64?style=flat-square)](#)
+[![Technique](https://img.shields.io/badge/technique-self--critique-7b2d8e?style=flat-square)](#)
+[![Priority](https://img.shields.io/badge/priority-DO%20NOT%20CUT-b30000?style=flat-square)](#)
+
+</div>
+
+---
+
+> [!CAUTION]
+> **This phase is the project.** It is what turns the brief's requirement into a guarantee.
+> If the schedule slips, cut [Phase 5](PHASE_5_UI.md) polish or
+> [Phase 7](PHASE_7_GUARDRAILS.md) breadth — never this.
 
 ## Goal
 
@@ -225,4 +238,8 @@ assert leaks("The train travelled 120 km.", sol).leaked is False # no false fire
 > fires, we regenerate with the leaked value named. If that still fails, we redact — and string
 > replacement cannot fail. That is why we can say *never* rather than *usually*."
 
-**Next:** [Phase 5 — Streamlit UI](PHASE_5_UI.md)
+<div align="center">
+
+[← Phase 3 · Hint Ladder](PHASE_3_HINT_LADDER.md) · [Index](PHASES_INDEX.md) · [Phase 5 · Streamlit UI →](PHASE_5_UI.md)
+
+</div>

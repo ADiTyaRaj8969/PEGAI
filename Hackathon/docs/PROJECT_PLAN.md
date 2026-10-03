@@ -1,7 +1,19 @@
-# Project Plan — Hint-Based Math Tutor
+<div align="center">
 
-**Team 5 · Problem 13 · 3 October 2026 · Window: 11:00 AM – 2:00 PM**
+# Project Plan
 
+### Hint-Based Math Tutor — the three-hour build
+
+[![Team](https://img.shields.io/badge/Team-5-7b2d8e?style=flat-square)](#)
+[![Problem](https://img.shields.io/badge/Problem-13-0b3d62?style=flat-square)](#)
+[![Date](https://img.shields.io/badge/3%20October%202026-1a7f64?style=flat-square)](#)
+[![Window](https://img.shields.io/badge/11%3A00%20–%2014%3A00-b35309?style=flat-square)](#)
+
+</div>
+
+---
+
+> [!NOTE]
 > **Detailed prompts per phase:** [PHASES_INDEX.md](PHASES_INDEX.md) — each phase has its own
 > document containing the complete prompt text, a line-by-line rationale for every rule, tests,
 > and exit criteria. This file is the schedule; those files are the build instructions.
@@ -207,5 +219,14 @@ Agree the function signatures in SRS §3.2/§3.3 **before** splitting, so the tr
 3. Phase 6.3/6.6 refinements → keep only first-wrong-step detection.
 4. Phase 8.1 → 10 cases instead of 12 (the stated minimum).
 
-**Never cut:** the leak guard (Phase 4), the labelled-set metric (Phase 8.3), or the prompt history
-(Phase 8.4) — all three are explicit rubric items.
+> [!CAUTION]
+> **Never cut:** the leak guard (Phase 4), the labelled-set metric (Phase 8.3), or the prompt
+> history (Phase 8.4) — all three are explicit rubric items.
+
+---
+
+<div align="center">
+
+[Back to README](../README.md) · [Phase Index](PHASES_INDEX.md) · [SRS](SRS.md)
+
+</div>

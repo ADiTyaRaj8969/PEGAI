@@ -1,7 +1,18 @@
-# Phase 6 — Wrong-Step Detection
+<div align="center">
 
-**12:50 – 13:15 · Prompt: `DIAGNOSE_PROMPT` · Technique: decomposition + comparative reasoning**
-**This is the stretch challenge, and the brief marks it mandatory.**
+# Phase 6 · Wrong-Step Detection
+
+[![Time](https://img.shields.io/badge/12%3A50%20–%2013%3A15-0b3d62?style=flat-square)](#)
+[![Prompt](https://img.shields.io/badge/prompt-DIAGNOSE__PROMPT-1a7f64?style=flat-square)](#)
+[![Technique](https://img.shields.io/badge/technique-decomposition%20%2B%20comparison-7b2d8e?style=flat-square)](#)
+[![Scope](https://img.shields.io/badge/stretch%20challenge-MANDATORY-b30000?style=flat-square)](#)
+
+</div>
+
+---
+
+> [!IMPORTANT]
+> This is the **stretch challenge**, and the brief marks it mandatory — not optional.
 
 ## Goal
 
@@ -202,4 +213,8 @@ restatement of the formula.
 - [ ] Hint passes the leak guard
 - [ ] Logged in [PROMPT_HISTORY.md](PROMPT_HISTORY.md) at 12:50
 
-**Next:** [Phase 7 — Guardrails](PHASE_7_GUARDRAILS.md)
+<div align="center">
+
+[← Phase 5 · Streamlit UI](PHASE_5_UI.md) · [Index](PHASES_INDEX.md) · [Phase 7 · Guardrails →](PHASE_7_GUARDRAILS.md)
+
+</div>

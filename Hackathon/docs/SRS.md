@@ -1,13 +1,36 @@
-# Software Requirements Specification
-## Hint-Based Math Tutor — Problem 13
+<div align="center">
 
-| | |
+# Software Requirements Specification
+
+## Hint-Based Math Tutor
+
+**Problem 13 · Theme C — Reasoning, Decomposition and Multi-Step Workflows**
+
+</div>
+
+<br>
+
+| Field | Value |
 |---|---|
 | **Project** | Hint-Based Math Tutor |
 | **Team** | 5 |
+| **Venue** | MB306 |
 | **Event** | Prompt Engineering for Generative AI — 3-Hour Hackathon |
+| **Institution** | Marwadi University — Marwadi Chandarana Group |
 | **Date** | 3 October 2026 |
 | **Version** | 1.0 |
+| **Status** | Baseline, issued before implementation |
+
+---
+
+## Contents
+
+| § | Section | § | Section |
+|:--:|---|:--:|---|
+| **1** | [Introduction](#1-introduction) | **5** | [Non-Functional Requirements](#5-non-functional-requirements) |
+| **2** | [Overall Description](#2-overall-description) | **6** | [Acceptance Criteria](#6-acceptance-criteria) |
+| **3** | [External Interface Requirements](#3-external-interface-requirements) | **7** | [Risks](#7-risks) |
+| **4** | [Functional Requirements](#4-functional-requirements) | | |
 
 ---
 
@@ -112,7 +135,8 @@ guarantee enforceable.
 ### 2.4 Design Constraints
 
 - **The leak check must be deterministic code.** The model may not be the sole judge of whether
-  it leaked (a model that leaks is also a model that can wrongly claim it did not).
+  it leaked — a model that leaks is also a model that can wrongly claim it did not, so the two
+  failures are correlated and the second cannot catch the first.
 - Total build window is three hours; prefer a working narrow path over broad coverage.
 - Every prompt must be short enough that any team member can read it aloud and justify it.
 
@@ -321,3 +345,13 @@ The prototype is accepted when all of the following hold:
 | Wrong-step detection is too slow to build in time | Stretch challenge unmet | Build it as the narrow path first (single seeded-error case), broaden only if time remains |
 | JSON parsing failures | Crashes during demo | Schema validation + one repair retry + fallback message (FR-2.4, FR-6.4) |
 | Time overrun on UI polish | Nothing to show | UI is Phase 5; the pipeline and eval come first (see [PROJECT_PLAN.md](PROJECT_PLAN.md)) |
+
+---
+
+<div align="center">
+
+**End of Specification**
+
+[Back to README](../README.md) · [Project Plan](PROJECT_PLAN.md) · [Phase Index](PHASES_INDEX.md)
+
+</div>

@@ -1,6 +1,15 @@
-# Phase 7 — Guardrails
+<div align="center">
 
-**13:15 – 13:30 · Prompts: static refusal templates · Technique: layered defence**
+# Phase 7 · Guardrails
+
+[![Time](https://img.shields.io/badge/13%3A15%20–%2013%3A30-0b3d62?style=flat-square)](#)
+[![Prompts](https://img.shields.io/badge/prompts-static%20refusal%20templates-1a7f64?style=flat-square)](#)
+[![Technique](https://img.shields.io/badge/technique-layered%20defence-7b2d8e?style=flat-square)](#)
+[![Cases](https://img.shields.io/badge/cases-7-b35309?style=flat-square)](#)
+
+</div>
+
+---
 
 ## Goal
 
@@ -137,6 +146,7 @@ except LLMError as e:
 
 **Test:** set `GOOGLE_API_KEY=invalid` and click Start.
 
+> [!TIP]
 > Rehearse this one. An expired key mid-demo is the most likely thing to go wrong, and a friendly
 > error on screen is far better than a red traceback.
 
@@ -180,4 +190,8 @@ This table **is** the guardrail demo. Run it top to bottom; it takes about 90 se
 - [ ] The demo script above has been run start to finish once
 - [ ] Logged in [PROMPT_HISTORY.md](PROMPT_HISTORY.md) at 13:15
 
-**Next:** [Phase 8 — Evaluation & Demo](PHASE_8_EVALUATION.md)
+<div align="center">
+
+[← Phase 6 · Wrong-Step Detection](PHASE_6_DIAGNOSE.md) · [Index](PHASES_INDEX.md) · [Phase 8 · Evaluation & Demo →](PHASE_8_EVALUATION.md)
+
+</div>

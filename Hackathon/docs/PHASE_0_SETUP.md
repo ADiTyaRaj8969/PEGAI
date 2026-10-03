@@ -1,6 +1,14 @@
-# Phase 0 — Setup
+<div align="center">
 
-**11:00 – 11:15 · No prompts in this phase · Blocks everything else**
+# Phase 0 · Setup
+
+[![Time](https://img.shields.io/badge/11%3A00%20–%2011%3A15-0b3d62?style=flat-square)](#)
+[![Prompts](https://img.shields.io/badge/prompts-none-6b7684?style=flat-square)](#)
+[![Blocks](https://img.shields.io/badge/blocks-everything-b35309?style=flat-square)](#)
+
+</div>
+
+---
 
 ## Goal
 
@@ -137,3 +145,11 @@ python -c "from tutor.llm import complete; print(complete('Reply with the single
 - [ ] `git status` shows `.env` as ignored, not untracked
 - [ ] [PROMPT_HISTORY.md](PROMPT_HISTORY.md) has the 11:00 entry committed
 - [ ] Function signatures in [SRS.md](SRS.md) §3.2–3.3 agreed, so the three tracks can split
+
+---
+
+<div align="center">
+
+[Index](PHASES_INDEX.md) · [Phase 1 · V1 Baseline →](PHASE_1_BASELINE.md)
+
+</div>

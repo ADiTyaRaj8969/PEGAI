@@ -1,6 +1,14 @@
-# Phase 1 — V1 Baseline
+<div align="center">
 
-**11:15 – 11:30 · Prompt: `V1_SINGLE_PROMPT` · Technique: zero-shot (deliberately weak)**
+# Phase 1 · V1 Baseline
+
+[![Time](https://img.shields.io/badge/11%3A15%20–%2011%3A30-0b3d62?style=flat-square)](#)
+[![Prompt](https://img.shields.io/badge/prompt-V1__SINGLE__PROMPT-1a7f64?style=flat-square)](#)
+[![Technique](https://img.shields.io/badge/technique-zero--shot%20baseline-7b2d8e?style=flat-square)](#)
+
+</div>
+
+---
 
 ## Goal
 
@@ -14,6 +22,7 @@ Judges ask "how do you know your engineering helped?" The answer has to be a num
 baseline, not an assertion. V1 is a reasonable, good-faith attempt at the problem using one
 prompt — the kind most teams will submit. Its leak rate is the bar V2 must clear.
 
+> [!WARNING]
 > **Do not weaken this prompt to make V2 look better.** If V1 happens to score well, that is a
 > finding worth reporting, and V2 still wins on the guarantee: V1 *might* not leak, V2 *cannot*.
 
@@ -125,4 +134,8 @@ All four count as leaks. The Phase 4 guard is built to catch exactly these.
 > just didn't follow it. We measured it at _N_% across twelve cases. Everything we built after
 > this exists to turn that instruction into a guarantee."
 
-**Next:** [Phase 2 — Hidden Solver](PHASE_2_SOLVER.md)
+<div align="center">
+
+[← Phase 0 · Setup](PHASE_0_SETUP.md) · [Index](PHASES_INDEX.md) · [Phase 2 · Hidden Solver →](PHASE_2_SOLVER.md)
+
+</div>

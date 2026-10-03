@@ -1,6 +1,14 @@
-# Phase 3 — Hint Ladder
+<div align="center">
 
-**11:45 – 12:05 · Prompt: `HINT_LADDER_PROMPT` · Techniques: few-shot exemplars + role/persona prompting**
+# Phase 3 · Hint Ladder
+
+[![Time](https://img.shields.io/badge/11%3A45%20–%2012%3A05-0b3d62?style=flat-square)](#)
+[![Prompt](https://img.shields.io/badge/prompt-HINT__LADDER__PROMPT-1a7f64?style=flat-square)](#)
+[![Technique](https://img.shields.io/badge/technique-few--shot%20%2B%20role%20prompting-7b2d8e?style=flat-square)](#)
+
+</div>
+
+---
 
 ## Goal
 
@@ -120,7 +128,8 @@ Return ONLY this JSON object:
 | **Counter-example block** | Negative few-shot. Showing five *specific* violations works where "don't reveal the answer" does not — each line maps to an observed V1 failure. |
 | "Return ONLY this JSON object" | Parseability, consistent with Phase 2. |
 
-> **Note on `{{` and `}}`:** the prompt is a Python `.format()` template, so every literal brace in
+> [!CAUTION]
+> **On `{{` and `}}`:** the prompt is a Python `.format()` template, so every literal brace in
 > the JSON examples is doubled. Only `{problem}`, `{final_answer}`, `{aliases}` and
 > `{solution_steps}` are real placeholders. Getting this wrong throws `KeyError` at runtime — it is
 > the most common bug in this phase.
@@ -188,4 +197,8 @@ lad = generate_ladder("Ravi is 3 times as old as his son...", sol)
 - [ ] `{{`/`}}` escaping verified — no `KeyError`
 - [ ] Logged in [PROMPT_HISTORY.md](PROMPT_HISTORY.md) at 11:45
 
-**Next:** [Phase 4 — Leak Guard](PHASE_4_LEAK_GUARD.md)
+<div align="center">
+
+[← Phase 2 · Hidden Solver](PHASE_2_SOLVER.md) · [Index](PHASES_INDEX.md) · [Phase 4 · Leak Guard →](PHASE_4_LEAK_GUARD.md)
+
+</div>

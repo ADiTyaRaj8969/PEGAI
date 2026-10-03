@@ -1,6 +1,14 @@
-# Phase 5 — Streamlit UI
+<div align="center">
 
-**12:25 – 12:50 · No new prompts · Depends on Phases 2–4**
+# Phase 5 · Streamlit UI
+
+[![Time](https://img.shields.io/badge/12%3A25%20–%2012%3A50-0b3d62?style=flat-square)](#)
+[![Prompts](https://img.shields.io/badge/prompts-none-6b7684?style=flat-square)](#)
+[![Depends](https://img.shields.io/badge/depends%20on-Phases%202–4-b35309?style=flat-square)](#)
+
+</div>
+
+---
 
 ## Goal
 
@@ -37,7 +45,7 @@ turns an invisible guarantee into something a judge can see firing.
 ├──────────────────────────────────────────────────────────────┤
 │  HINT 1 of 3                                                 │
 │  This problem ties together three quantities: how far...     │
-│  ✅ leak check passed · alias + numeric + equation scan      │
+│  PASSED — leak check · alias + numeric + equation scan       │
 │                                                              │
 │  [ Show hint 2 ]   [ Show hint 3 (locked) ]                  │
 ├──────────────────────────────────────────────────────────────┤
@@ -48,7 +56,7 @@ turns an invisible guarantee into something a judge can see firing.
 │  └────────────────────────────────────────────────────────┘  │
 │                                           [ Check my steps ] │
 ├──────────────────────────────────────────────────────────────┤
-│  ☐ Compare V1 vs V2                                          │
+│  [ ] Compare V1 vs V2                                        │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -64,8 +72,8 @@ from tutor.hints import generate_ladder, generate_v1
 from tutor.guard import safe_hint
 from tutor.llm import LLMError
 
-st.set_page_config(page_title="Hint-Based Math Tutor", page_icon="🧮")
-st.title("🧮 Hint-Based Math Tutor")
+st.set_page_config(page_title="Hint-Based Math Tutor", layout="centered")
+st.title("Hint-Based Math Tutor")
 st.caption("Team 5 · Problem 13 · Progressive hints that never give the answer away")
 
 SAMPLES = {
@@ -112,9 +120,9 @@ if ss.level:
         st.info(hint)
         if lvl < 3:
             if verdict.leaked:
-                st.warning("⚠️ leak detected — hint regenerated before display")
+                st.warning("Leak detected — hint regenerated before display")
             else:
-                st.success("✅ leak check passed · alias + numeric + equation scan")
+                st.success("Leak check passed · alias + numeric + equation scan")
     if ss.level < 3 and st.button(f"Show hint {ss.level + 1}"):
         ss.level += 1
         st.rerun()
@@ -171,4 +179,8 @@ Every failure gets a sentence a student could understand. No stack traces.
 - [ ] All five error surfaces tested — none crashes the app
 - [ ] Browser zoom at 100% shows the ladder without scrolling (projector check)
 
-**Next:** [Phase 6 — Wrong-Step Detection](PHASE_6_DIAGNOSE.md)
+<div align="center">
+
+[← Phase 4 · Leak Guard](PHASE_4_LEAK_GUARD.md) · [Index](PHASES_INDEX.md) · [Phase 6 · Wrong-Step Detection →](PHASE_6_DIAGNOSE.md)
+
+</div>
