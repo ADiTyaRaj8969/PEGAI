@@ -31,7 +31,7 @@ first — never cut Phase 4 (leak guard) or Phase 6 (evaluation), as both are gr
 | # | Task | Owner | Output |
 |---|---|---|---|
 | 0.1 | `git init`, commit the docs, push the repo | — | Repo live |
-| 0.2 | `requirements.txt`: `streamlit`, `python-dotenv`, provider SDK | — | Installs clean |
+| 0.2 | `requirements.txt`: `streamlit`, `python-dotenv`, `openai` (Grok is OpenAI-compatible) | — | Installs clean |
 | 0.3 | `.env.example` + `.gitignore` (must include `.env`) | — | No key in git |
 | 0.4 | `tutor/llm.py` — `complete()` adapter, one smoke-test call | — | "Hello" round-trips |
 | 0.5 | Start [PROMPT_HISTORY.md](PROMPT_HISTORY.md) with the 11:00 entry | — | Log open |

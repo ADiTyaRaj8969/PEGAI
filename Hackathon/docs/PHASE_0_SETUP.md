@@ -4,6 +4,7 @@
 
 [![Time](https://img.shields.io/badge/11%3A00%20–%2011%3A15-0b3d62?style=flat-square)](#)
 [![Prompts](https://img.shields.io/badge/prompts-none-6b7684?style=flat-square)](#)
+[![Provider](https://img.shields.io/badge/provider-xAI%20Grok-1a7f64?style=flat-square)](#)
 [![Blocks](https://img.shields.io/badge/blocks-everything-b35309?style=flat-square)](#)
 
 </div>
@@ -52,8 +53,12 @@ Hackathon/
 ```
 streamlit>=1.30
 python-dotenv>=1.0
-google-generativeai>=0.8      # swap for your provider
+openai>=1.40                  # xAI Grok exposes an OpenAI-compatible API
 ```
+
+> [!NOTE]
+> We call **Grok (xAI)**. Its API is OpenAI-compatible, so the official `openai` package is the
+> client — only the `base_url` and the key differ. No xAI-specific SDK is needed.
 
 ## `.gitignore`
 
@@ -71,10 +76,16 @@ eval/results_*.json
 ## `.env.example`
 
 ```
-LLM_PROVIDER=gemini
-LLM_MODEL=gemini-2.0-flash
-GOOGLE_API_KEY=your_key_here
+LLM_PROVIDER=grok
+LLM_MODEL=grok-4
+XAI_API_KEY=your_key_here
+XAI_BASE_URL=https://api.x.ai/v1
 ```
+
+> [!IMPORTANT]
+> Confirm the exact model ID against xAI's current model list before the run — the family is
+> versioned (`grok-4`, `grok-4-fast`, `grok-3-mini`) and IDs change. `LLM_MODEL` is read from the
+> environment precisely so this is a one-line fix, not a code change.
 
 ## `tutor/llm.py`
 
@@ -87,28 +98,39 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+XAI_BASE_URL = "https://api.x.ai/v1"
+
 class LLMError(Exception):
     """Raised for any provider failure; caught by the UI (FR-6.6)."""
+
+def _client():
+    """Grok speaks the OpenAI wire format, so the openai client works unchanged."""
+    from openai import OpenAI
+    key = os.getenv("XAI_API_KEY")
+    if not key:
+        raise LLMError("XAI_API_KEY missing. Copy .env.example to .env and add your key.")
+    return OpenAI(api_key=key, base_url=os.getenv("XAI_BASE_URL", XAI_BASE_URL))
 
 def complete(prompt: str, *, system: str = "", json_mode: bool = False,
              temperature: float = 0.2, max_tokens: int = 1200) -> str:
     """Send one prompt, return raw text. The only place a vendor SDK appears."""
-    provider = os.getenv("LLM_PROVIDER", "gemini")
+    messages = []
+    if system:
+        messages.append({"role": "system", "content": system})
+    messages.append({"role": "user", "content": prompt})
+
+    extra = {"response_format": {"type": "json_object"}} if json_mode else {}
     try:
-        if provider == "gemini":
-            import google.generativeai as genai
-            genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
-            model = genai.GenerativeModel(
-                os.getenv("LLM_MODEL", "gemini-2.0-flash"),
-                system_instruction=system or None,
-            )
-            cfg = {"temperature": temperature, "max_output_tokens": max_tokens}
-            if json_mode:
-                cfg["response_mime_type"] = "application/json"
-            return model.generate_content(prompt, generation_config=cfg).text
-        raise LLMError(f"Unknown provider: {provider}")
-    except KeyError:
-        raise LLMError("API key missing. Copy .env.example to .env and add your key.")
+        r = _client().chat.completions.create(
+            model=os.getenv("LLM_MODEL", "grok-4"),
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            **extra,
+        )
+        return r.choices[0].message.content or ""
+    except LLMError:
+        raise                                    # already friendly, don't re-wrap
     except Exception as e:
         raise LLMError(f"Model call failed: {e}") from e
 
@@ -125,13 +147,18 @@ def complete_json(prompt: str, *, system: str = "", temperature: float = 0.2) ->
     return json.loads(text[start:end + 1])
 ```
 
-### Two details that save time later
+### Three details that save time later
 
 **`temperature=0.2` everywhere.** Low but not zero. The evaluation in Phase 8 compares V1 against
 V2, and that comparison is only meaningful if the randomness is held down (NFR-7).
 
 **`complete_json` strips fences and surrounding prose.** Models wrap JSON in ` ```json ` fences
 even when told not to. Handling it in one place means Phases 2, 3, 4 and 6 never deal with it.
+
+**JSON mode needs the word "JSON" in the prompt.** On OpenAI-compatible endpoints,
+`response_format={"type": "json_object"}` is rejected unless the messages mention JSON. Every
+prompt from Phase 2 onward says *"return ONLY a JSON object"*, so this is already satisfied — but
+it is why that wording must not be edited out.
 
 ## Smoke Test
 

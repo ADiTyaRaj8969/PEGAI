@@ -144,7 +144,7 @@ except LLMError as e:
     st.caption(f"Technical detail: {e}")     # collapsed, for the team not the student
 ```
 
-**Test:** set `GOOGLE_API_KEY=invalid` and click Start.
+**Test:** set `XAI_API_KEY=invalid` and click Start.
 
 > [!TIP]
 > Rehearse this one. An expired key mid-demo is the most likely thing to go wrong, and a friendly
@@ -156,6 +156,12 @@ except LLMError as e:
 
 Two layers: the provider's own safety filter, plus `is_math_word_problem: false` for anything that
 is not a math problem — which covers unsafe input as a subset.
+
+> [!IMPORTANT]
+> Grok filters less aggressively than some other hosted models, so do not rely on the provider
+> layer alone. The `is_math_word_problem` classifier from [Phase 2](PHASE_2_SOLVER.md) is the
+> guardrail that actually carries this case: anything that is not a solvable word problem is
+> refused regardless of why. Test 7.7 against *our* classifier, not the vendor's filter.
 
 ```python
 except LLMError as e:
