@@ -77,15 +77,25 @@ eval/results_*.json
 
 ```
 LLM_PROVIDER=grok
-LLM_MODEL=grok-4
+LLM_MODEL=grok-4.7
 XAI_API_KEY=your_key_here
 XAI_BASE_URL=https://api.x.ai/v1
 ```
 
+Current text model IDs, verified against [docs.x.ai/docs/models](https://docs.x.ai/docs/models):
+
+| Model ID | Context | Notes |
+|---|:--:|---|
+| `grok-4.7` | 500k | **Recommended** — most capable for chat and code |
+| `grok-4.6` | 500k | Previous generation |
+| `grok-4.5` | 500k | Previous generation |
+| `grok-4.3` | 1M | Larger context |
+| `grok-build-0.1` | 256k | Cheapest text model — worth considering for the Phase 8 eval runs |
+
 > [!IMPORTANT]
-> Confirm the exact model ID against xAI's current model list before the run — the family is
-> versioned (`grok-4`, `grok-4-fast`, `grok-3-mini`) and IDs change. `LLM_MODEL` is read from the
-> environment precisely so this is a one-line fix, not a code change.
+> There is no `grok-4` — the versioning jumps straight to point releases. Re-check the list
+> before the run; `LLM_MODEL` is read from the environment precisely so this is a one-line fix in
+> `.env`, not a code change.
 
 ## `tutor/llm.py`
 
@@ -122,7 +132,7 @@ def complete(prompt: str, *, system: str = "", json_mode: bool = False,
     extra = {"response_format": {"type": "json_object"}} if json_mode else {}
     try:
         r = _client().chat.completions.create(
-            model=os.getenv("LLM_MODEL", "grok-4"),
+            model=os.getenv("LLM_MODEL", "grok-4.7"),
             messages=messages,
             temperature=temperature,
             max_tokens=max_tokens,
