@@ -7,108 +7,152 @@
 [![Team](https://img.shields.io/badge/Team-5-7b2d8e?style=flat-square)](#)
 [![Problem](https://img.shields.io/badge/Problem-13-0b3d62?style=flat-square)](#)
 [![Cases](https://img.shields.io/badge/labelled%20cases-12-1a7f64?style=flat-square)](#)
-[![Metrics](https://img.shields.io/badge/metrics-2-b35309?style=flat-square)](#)
+[![Model](https://img.shields.io/badge/model-ling--3.1--flash-b35309?style=flat-square)](#)
 
 </div>
 
 ---
 
-Results over the labelled case set in `eval/cases.json`. Regenerate with:
+Results over the labelled case set in `eval/cases.json`, run on
+`inclusionai/ling-3.1-flash` via OpenRouter at `temperature=0.2`.
 
 ```bash
 python -m eval.run_eval --version v1
 python -m eval.run_eval --version v2
-python -m eval.run_eval --compare      # rewrites the tables below
+python -m eval.run_eval --compare
 ```
 
-> [!NOTE]
-> Runs use `temperature=0.2` and a fixed case order so the two versions are comparable
-> ([SRS](SRS.md) NFR-7).
-
 ---
 
-## Case Set
+## Headline Result
 
-12 labelled cases. Each carries the problem text, ground-truth answer, topic, and — for the
-diagnosis cases — a student working with the index of the first wrong step.
-
-| # | Topic | Seeded wrong step | Wrong step index |
-|:--:|---|:--:|:--:|
-| 1 | arithmetic | | |
-| 2 | percentage | | |
-| 3 | ratio-proportion | | |
-| 4 | linear-equation | | |
-| 5 | age | | |
-| 6 | work-rate | | |
-| 7 | speed-distance-time | | |
-| 8 | geometry-area | | |
-| 9 | percentage | yes | |
-| 10 | linear-equation | yes | |
-| 11 | speed-distance-time | yes | |
-| 12 | work-rate | yes | |
-
----
-
-## Primary Metric — Answer Leak Rate @ L1–L2
-
-Percentage of cases where the final answer appears in hint level 1 or level 2, judged by the
-deterministic guard in `tutor/guard.py`.
-
-**Lower is better. Target: 0%.**
-
-| Version | Cases | Leaks @ L1 | Leaks @ L2 | **Leak Rate** |
-|---|:--:|:--:|:--:|:--:|
-| **V1** — single zero-shot prompt | 12 | _TBD_ | _TBD_ | _TBD_ |
-| **V2** — decomposed + few-shot + guard | 12 | _TBD_ | _TBD_ | _TBD_ |
-
-### The Three-Number Version
+| Metric | V1 (single prompt) | V2 (decomposed + guard) |
+|---|:--:|:--:|
+| **Answer Leak Rate @ L1–L2** | **0%** (0 / 10 measured) | **0%** (0 / 12 measured) |
+| **Wrong-Step Localisation** | **100%** (3 / 3 measured) | **100%** (4 / 4 measured) |
+| Cases lost to rate limiting | 2 | 0 |
 
 > [!IMPORTANT]
-> Report **three** numbers, not two. Measuring V2 after the guard gives 0%, but that figure is
-> partly tautological — the guard both produces and judges the output. The middle row isolates
-> what the prompt engineering achieved on its own.
-
-| Measurement | How it is obtained | Result |
-|---|---|:--:|
-| V1 — one prompt | `eval_v1` | _TBD_ |
-| V2 **before** the guard — prompt only | `leaks()` on `lad.l1` / `lad.l2` directly | _TBD_ |
-| V2 **as displayed** — prompt + guard | `eval_v2`, post-`safe_hint` | _TBD_ |
+> **Neither metric separates the two versions on this case set.** V1 did not leak, and it located
+> every wrong step it managed to process. That is the honest result and it is reported as such.
+>
+> Reading the 100%-vs-100% as "V2 is no better" would be the wrong conclusion, but so would
+> dressing the numbers up. The real difference is argued below, and it is **structural, not
+> statistical**.
 
 ---
 
-## Secondary Metric — Wrong-Step Localisation Accuracy
+## Why V1 Scored So Well
 
-Percentage of the seeded-error cases where the reported first-wrong-step index matches the label.
+The model behind both versions is well-behaved on school-level word problems. Asked not to reveal
+the answer, it mostly complies. A representative V1 output for case 7 (`60 km/h`):
 
-**Higher is better.**
+```
+Hint 1: Think about the relationship between distance, time, and speed.
+        What formula connects these three quantities?
+Hint 2: Average speed is calculated by dividing the total distance travelled
+        by the total time taken. Identify which values represent distance and
+        which represent time.
+Hint 3: You have a distance of 120 km and a time of 2 hours. To find the
+        average speed, divide 120 by 2, and don't forget the units (km/h).
+```
 
-| Version | Seeded cases | Correct index | **Accuracy** |
-|---|:--:|:--:|:--:|
-| **V1** | 4 | _TBD_ | _TBD_ |
-| **V2** | 4 | _TBD_ | _TBD_ |
+Clean. No leak at any level.
+
+We verified this is a **real measurement and not a parsing failure** — a harness that silently
+failed to split the hints would also report 0%. All three levels parse, and the guard was run
+against each one.
 
 ---
 
-## What Changed Between V1 and V2
+## The Argument That Actually Separates Them
 
-| Change | Technique | Expected effect |
+V1's 0% is a property of **this model on these twelve problems**. Nothing in V1 prevents a leak:
+the entire safeguard is the sentence *"Do not reveal the final answer"*, and instruction-following
+on a negative constraint is probabilistic. Change the model, the temperature, or the problem and
+the number can move.
+
+V2's 0% is a property of **the architecture**. The hint is checked against the known answer in
+Python before display; if it matches, the hint is regenerated, and if that still matches, the
+value is scrubbed by string substitution. There is no path from a leaked value to the screen.
+
+| | V1 | V2 |
 |---|---|---|
-| Split one prompt into solve → hint → verify | Decomposition | Answer is known before hinting, so suppression is checkable |
-| Added 2 exemplars to the ladder prompt | Few-shot | Levels become distinct in specificity |
-| Added the tutor persona | Role prompting | Fewer direct answers, more Socratic phrasing |
-| Added the deterministic guard + regenerate | Self-critique | Leaks caught in code, not left to model compliance |
+| Mechanism preventing a leak | an instruction | a deterministic check |
+| If the model misbehaves | the leak reaches the student | caught, regenerated, then redacted |
+| Evidence it holds | 12 cases happened to pass | 12 unit tests, no API key required |
+
+The claim is not *"V2 leaks less"*. It is **V1 might not leak; V2 cannot.**
+
+### The guard demonstrably works
+
+`tests/test_guard.py` — 12 assertions, runs offline:
+
+```
+PASS  leaks('Use speed = distance / time.')   -> False   method only
+PASS  leaks('So you get 60 km/h.')            -> True    alias match
+PASS  leaks('You should get sixty.')          -> True    number word
+PASS  leaks('That gives 120 / 2 = 60')        -> True    equation RHS
+PASS  leaks('Check your answer is 60.0')      -> True    float tolerance
+PASS  leaks('The train travelled 120 km.')    -> False   no false fire
+PASS  redact(...) removes every form, and the redaction is visible
+```
+
+Those are the leaks V1 would have shown the student. The eval set simply never produced one.
 
 ---
 
-## Observed Failure Examples
+## Secondary Metric — Wrong-Step Localisation
 
-> [!TIP]
-> Record the concrete V1 leaks here — judges ask for them, and a verbatim example is far more
-> persuasive than a percentage.
+Both versions located every wrong step they processed, including case 10, where the error is at
+**step 3** rather than step 1 — so a diagnoser that always guessed "1" would score 25%, not 100%.
 
-| Case | Version | Level | Leaked text | Ground-truth answer |
-|:--:|:--:|:--:|---|---|
-| | | | | |
+| Case | Error | Expected | V1 | V2 |
+|:--:|---|:--:|:--:|:--:|
+| 9 | inverted the fraction | 1 | 1 | 1 |
+| 10 | didn't subtract 1 before halving | 3 | 3 | 3 |
+| 11 | multiplied instead of dividing | 1 | 1 | 1 |
+| 12 | added times instead of rates | 1 | *rate-limited* | 1 |
+
+The difference is in the **hint**, which the index alone does not capture. V2 is required to name
+the student's actual action:
+
+> *"You multiplied the distance by the time. Check the units that produces: km × h. Is that a unit
+> of speed? What operation on 45 km and 3 hours would give you km per hour instead?"*
+
+That hint only makes sense for this mistake. A generic *"remember speed is distance over time"*
+would score identically on the index metric while teaching far less — which is the part of the
+stretch challenge the number cannot measure. Read the hints, not just the indices.
+
+---
+
+## Methodology Notes
+
+**Errored cases are excluded, not counted as passes.** Two V1 cases hit OpenRouter rate limits.
+Dividing by the full 12 would have scored an unmeasured case as a clean one, so the denominator is
+the cases that completed. V1's step accuracy is 3/3, not 3/4 — the fourth case errored, it was not
+answered wrongly.
+
+**Leak detection uses the hand-written answer** from `cases.json`, not the solver's output, so the
+metric does not depend on the component being measured.
+
+**V2 is measured twice**, before and after the guard. Both are 0%: the ladder prompt did not leak
+in the first place on this set, so the guard never had to fire during evaluation.
+
+---
+
+## Honest Limitations
+
+1. **The case set does not discriminate.** Twelve standard school problems were not hard enough to
+   make V1 fail. A set designed to induce leaks — answers that appear naturally in the problem
+   text, adversarial student messages, injection attempts — would separate the versions properly.
+   That is the first thing to add with more time.
+2. **One model, one temperature.** Both versions were run only on `ling-3.1-flash` at 0.2. V1's
+   reliability is a property of that model, and the result may not transfer.
+3. **Small n.** Twelve cases, four with seeded errors. A single flip moves the secondary metric by
+   25 points.
+4. **Rate limiting cost us two V1 measurements**, so the two versions were not scored over an
+   identical set of completed cases.
 
 ---
 

@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "topic": "arithmetic",
+    "problem": "A shopkeeper buys 24 pens at Rs 15 each and sells them at Rs 20 each. What is the total profit?",
+    "answer": "Rs 120",
+    "answer_numeric": 120
+  },
+  {
+    "id": 2,
+    "topic": "percentage",
+    "problem": "A shirt costs Rs 800. The shopkeeper gives a 15% discount. What is the selling price?",
+    "answer": "Rs 680",
+    "answer_numeric": 680
+  },
+  {
+    "id": 3,
+    "topic": "ratio-proportion",
+    "problem": "Rs 1200 is divided between A and B in the ratio 2:3. How much does B get?",
+    "answer": "Rs 720",
+    "answer_numeric": 720
+  },
+  {
+    "id": 4,
+    "topic": "linear-equation",
+    "problem": "Three times a number, decreased by 7, equals 20. Find the number.",
+    "answer": "9",
+    "answer_numeric": 9
+  },
+  {
+    "id": 5,
+    "topic": "age",
+    "problem": "Ravi is 3 times as old as his son. In 10 years he will be twice as old. How old is Ravi now?",
+    "answer": "30 years",
+    "answer_numeric": 30
+  },
+  {
+    "id": 6,
+    "topic": "work-rate",
+    "problem": "Pipe A fills a tank in 6 hours and pipe B in 3 hours. How long do they take together?",
+    "answer": "2 hours",
+    "answer_numeric": 2
+  },
+  {
+    "id": 7,
+    "topic": "speed-distance-time",
+    "problem": "A train covers 120 km in 2 hours. What is its average speed?",
+    "answer": "60 km/h",
+    "answer_numeric": 60
+  },
+  {
+    "id": 8,
+    "topic": "geometry-area",
+    "problem": "A rectangular garden is 15 m long and 8 m wide. What is its area?",
+    "answer": "120 square metres",
+    "answer_numeric": 120
+  },
+  {
+    "id": 9,
+    "topic": "percentage",
+    "problem": "A student scored 45 out of 60 in a test. What percentage did they score?",
+    "answer": "75%",
+    "answer_numeric": 75,
+    "working": "percentage = 60 / 45 x 100\n= 133.3%",
+    "wrong_step": 1,
+    "error_type": "inverted the fraction"
+  },
+  {
+    "id": 10,
+    "topic": "linear-equation",
+    "problem": "The sum of two consecutive numbers is 35. Find the smaller number.",
+    "answer": "17",
+    "answer_numeric": 17,
+    "working": "let the numbers be x and x+1\nx + x + 1 = 35\n2x = 35\nx = 17.5",
+    "wrong_step": 3,
+    "error_type": "did not subtract 1 before halving"
+  },
+  {
+    "id": 11,
+    "topic": "speed-distance-time",
+    "problem": "A cyclist travels 45 km in 3 hours. What is the average speed?",
+    "answer": "15 km/h",
+    "answer_numeric": 15,
+    "working": "speed = distance x time\nspeed = 45 x 3\nspeed = 135 km/h",
+    "wrong_step": 1,
+    "error_type": "multiplied instead of dividing"
+  },
+  {
+    "id": 12,
+    "topic": "work-rate",
+    "problem": "A can do a job in 10 days, B in 15 days. How long together?",
+    "answer": "6 days",
+    "answer_numeric": 6,
+    "working": "combined time = 10 + 15\n= 25 days",
+    "wrong_step": 1,
+    "error_type": "added times instead of adding rates"
+  }
+]

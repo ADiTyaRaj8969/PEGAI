@@ -173,9 +173,45 @@ Return ONLY: {{"hint": "..."}}"""
 If the retry still leaks, no third call. Substitute and show the redaction (FR-4.5):
 
 ```python
-def redact(hint: str, verdict: LeakVerdict) -> str:
-    return hint.replace(verdict.value, "[hidden — try the next hint]")
+MASK = "[hidden — try the next hint]"
+
+def redact(hint: str, sol, verdict: LeakVerdict) -> str:
+    """Removes the literal leaked string, every alias, and any numeric token
+    equal to the answer — so a near-miss on the literal value cannot let the
+    answer through."""
+    out = hint
+    if verdict.value:
+        out = re.sub(re.escape(verdict.value), MASK, out, flags=re.IGNORECASE)
+
+    for alias in sorted(sol.answer_aliases or [], key=len, reverse=True):
+        if alias:
+            out = re.sub(re.escape(alias), MASK, out, flags=re.IGNORECASE)
+
+    if sol.answer_numeric is not None:
+        target = float(sol.answer_numeric)
+
+        def _scrub(m):
+            try:
+                if abs(float(Fraction(m.group().replace(" ", ""))) - target) < TOL:
+                    return MASK
+            except (ValueError, ZeroDivisionError):
+                pass
+            return m.group()
+
+        out = NUM_RE.sub(_scrub, out)
+
+        for word, val in WORDS.items():                  # "sixty"
+            if abs(val - target) < TOL:
+                out = re.sub(rf"\b{word}\b", MASK, out, flags=re.IGNORECASE)
+    return out
 ```
+
+> [!NOTE]
+> A naive `hint.replace(verdict.value, MASK)` has a hole: if the regenerated hint expresses the
+> answer in a *different* form from the one originally detected, the literal replace finds nothing
+> and returns the hint with the leak intact. Since this is the layer that is supposed to be unable
+> to fail, it scrubs every form — literal, alias, numeric and word — rather than just the one that
+> tripped the detector.
 
 Visible redaction is honest: the student sees the system withheld something, which is the correct
 behaviour at L1/L2. It cannot fail, which is what makes the overall guarantee hold.
@@ -199,7 +235,7 @@ def safe_hint(level: int, hint: str, sol) -> tuple[str, LeakVerdict]:
         level=level, leaked_value=v.value, where=v.where,
         hint_text=hint, level_contract=LEVEL_CONTRACTS[level]))["hint"]
     v2 = leaks(retry, sol)
-    return (retry, v2) if not v2.leaked else (redact(retry, v2), v2)
+    return (retry, v) if not v2.leaked else (redact(retry, sol, v2), v2)
 ```
 
 ---

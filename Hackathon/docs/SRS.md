@@ -128,7 +128,7 @@ guarantee enforceable.
 
 ### 2.3 Operating Environment
 
-- Python 3.10+, Streamlit, and the `openai` client reaching **xAI Grok** over HTTPS.
+- Python 3.10+, Streamlit, and the `openai` client reaching **OpenRouter** over HTTPS.
 - Windows 11 development machine; browser-based UI.
 - API credentials supplied via a `.env` file, never committed.
 
@@ -142,7 +142,7 @@ guarantee enforceable.
 
 ### 2.5 Assumptions and Dependencies
 
-- The xAI Grok API is available and within quota for the demo window.
+- The OpenRouter API is available and within free-tier rate limits for the demo window.
 - Input problems are in English and have a single well-defined numeric or short symbolic answer.
 - Student working is supplied as plain text, one step per line.
 
@@ -172,10 +172,16 @@ def complete(prompt: str, *, system: str = "", json_mode: bool = False,
              temperature: float = 0.2, max_tokens: int = 800) -> str
 ```
 
-The model is **Grok (xAI)**, reached over its OpenAI-compatible endpoint at `https://api.x.ai/v1`
-using the `openai` client. Base URL, key and model ID are read from the environment
-(`XAI_BASE_URL`, `XAI_API_KEY`, `LLM_MODEL`) so the rest of the codebase never imports a vendor
-SDK directly and the model can be changed without a code edit.
+The model is reached through **OpenRouter**'s OpenAI-compatible endpoint at
+`https://openrouter.ai/api/v1` using the `openai` client; the model is
+`inclusionai/ling-3.1-flash`, which OpenRouter serves at zero cost. Base URL, key and model ID
+are read from the environment (`OPENROUTER_BASE_URL`, `OPENROUTER_API_KEY`, `LLM_MODEL`) so the
+rest of the codebase never imports a vendor SDK directly and the model can be changed without a
+code edit.
+
+This model does not support `response_format`, so structured output is not enforced at the API
+level. Valid JSON is produced by prompt wording alone (§4.2), recovered by tolerant parsing, and
+repaired by one retry (FR-2.4).
 
 ### 3.3 Data Interfaces
 

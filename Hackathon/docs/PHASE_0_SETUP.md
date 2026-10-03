@@ -4,7 +4,8 @@
 
 [![Time](https://img.shields.io/badge/11%3A00%20–%2011%3A15-0b3d62?style=flat-square)](#)
 [![Prompts](https://img.shields.io/badge/prompts-none-6b7684?style=flat-square)](#)
-[![Provider](https://img.shields.io/badge/provider-xAI%20Grok-1a7f64?style=flat-square)](#)
+[![Provider](https://img.shields.io/badge/provider-OpenRouter-1a7f64?style=flat-square)](#)
+[![Cost](https://img.shields.io/badge/cost-free%20tier-2d7a2d?style=flat-square)](#)
 [![Blocks](https://img.shields.io/badge/blocks-everything-b35309?style=flat-square)](#)
 
 </div>
@@ -53,12 +54,16 @@ Hackathon/
 ```
 streamlit>=1.30
 python-dotenv>=1.0
-openai>=1.40                  # xAI Grok exposes an OpenAI-compatible API
+openai>=1.40                  # OpenRouter exposes an OpenAI-compatible API
 ```
 
 > [!NOTE]
-> We call **Grok (xAI)**. Its API is OpenAI-compatible, so the official `openai` package is the
-> client — only the `base_url` and the key differ. No xAI-specific SDK is needed.
+> We call **OpenRouter**, using the model `inclusionai/ling-3.1-flash`. OpenRouter's API is
+> OpenAI-compatible, so the official `openai` package is the client — only the `base_url` and the
+> key differ. No provider-specific SDK is needed.
+>
+> That model is **free**: OpenRouter lists it at $0 per token for both prompt and completion,
+> with a 262k context window.
 
 ## `.gitignore`
 
@@ -76,26 +81,21 @@ eval/results_*.json
 ## `.env.example`
 
 ```
-LLM_PROVIDER=grok
-LLM_MODEL=grok-4.7
-XAI_API_KEY=your_key_here
-XAI_BASE_URL=https://api.x.ai/v1
+LLM_PROVIDER=openrouter
+LLM_MODEL=inclusionai/ling-3.1-flash
+OPENROUTER_API_KEY=your_key_here
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 ```
 
-Current text model IDs, verified against [docs.x.ai/docs/models](https://docs.x.ai/docs/models):
-
-| Model ID | Context | Notes |
-|---|:--:|---|
-| `grok-4.7` | 500k | **Recommended** — most capable for chat and code |
-| `grok-4.6` | 500k | Previous generation |
-| `grok-4.5` | 500k | Previous generation |
-| `grok-4.3` | 1M | Larger context |
-| `grok-build-0.1` | 256k | Cheapest text model — worth considering for the Phase 8 eval runs |
+> [!CAUTION]
+> `.env` holds a live API key and is git-ignored. Never commit it, and never paste a key into
+> `.env.example`, a doc, or a chat window. If a key is ever exposed, rotate it at
+> [openrouter.ai/keys](https://openrouter.ai/keys).
 
 > [!IMPORTANT]
-> There is no `grok-4` — the versioning jumps straight to point releases. Re-check the list
-> before the run; `LLM_MODEL` is read from the environment precisely so this is a one-line fix in
-> `.env`, not a code change.
+> `LLM_MODEL` is read from the environment precisely so swapping models is a one-line fix in
+> `.env`, not a code change. If the free model is rate-limited during the run, any other
+> OpenRouter model ID drops in — look for a `:free` suffix to stay at zero cost.
 
 ## `tutor/llm.py`
 
@@ -103,23 +103,38 @@ One function, so no other module ever imports a vendor SDK. Swapping providers i
 change — worth the ten minutes when a quota runs out mid-demo.
 
 ```python
-import os, json
-from dotenv import load_dotenv
+import os, json, time, random
 
-load_dotenv()
+try:                                 # convenience only — env vars may be set directly
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
-XAI_BASE_URL = "https://api.x.ai/v1"
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+
+# The free pool is shared, so 429s from the upstream provider are routine and
+# transient. Retrying costs a few seconds; not retrying costs the demo.
+RETRY_STATUS = {408, 409, 429, 500, 502, 503, 504}
+MAX_ATTEMPTS = 5
+
 
 class LLMError(Exception):
     """Raised for any provider failure; caught by the UI (FR-6.6)."""
 
+
+class _Transient(Exception):
+    """Internal: a failure worth retrying. Never escapes this module."""
+
+
 def _client():
-    """Grok speaks the OpenAI wire format, so the openai client works unchanged."""
+    """OpenRouter speaks the OpenAI wire format, so the openai client works unchanged."""
     from openai import OpenAI
-    key = os.getenv("XAI_API_KEY")
+    key = os.getenv("OPENROUTER_API_KEY")
     if not key:
-        raise LLMError("XAI_API_KEY missing. Copy .env.example to .env and add your key.")
-    return OpenAI(api_key=key, base_url=os.getenv("XAI_BASE_URL", XAI_BASE_URL))
+        raise LLMError("OPENROUTER_API_KEY missing. Copy .env.example to .env and add your key.")
+    return OpenAI(api_key=key, base_url=os.getenv("OPENROUTER_BASE_URL", OPENROUTER_BASE_URL))
+
 
 def complete(prompt: str, *, system: str = "", json_mode: bool = False,
              temperature: float = 0.2, max_tokens: int = 1200) -> str:
@@ -129,20 +144,46 @@ def complete(prompt: str, *, system: str = "", json_mode: bool = False,
         messages.append({"role": "system", "content": system})
     messages.append({"role": "user", "content": prompt})
 
-    extra = {"response_format": {"type": "json_object"}} if json_mode else {}
-    try:
-        r = _client().chat.completions.create(
-            model=os.getenv("LLM_MODEL", "grok-4.7"),
-            messages=messages,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            **extra,
-        )
-        return r.choices[0].message.content or ""
-    except LLMError:
-        raise                                    # already friendly, don't re-wrap
-    except Exception as e:
-        raise LLMError(f"Model call failed: {e}") from e
+    # ling-3.1-flash rejects response_format (no structured-outputs support), so JSON
+    # is requested in the prompt and parsed tolerantly by complete_json().
+    # It is also a reasoning model: thinking tokens eat into max_tokens and can leave the
+    # reply empty, so thinking is switched off. Step-by-step work lives in the prompts.
+    extra = {"extra_body": {"reasoning": {"enabled": False}}}
+
+    last = None
+    for attempt in range(MAX_ATTEMPTS):
+        try:
+            r = _client().chat.completions.create(
+                model=os.getenv("LLM_MODEL", "inclusionai/ling-3.1-flash"),
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                **extra,
+            )
+            choice = r.choices[0]
+            text = choice.message.content or ""
+            if not text.strip() or choice.finish_reason == "length":
+                # Transient on a shared pool — worth another go before failing.
+                raise _Transient("empty or truncated reply")
+            return text
+
+        except LLMError:
+            raise                                # missing key etc. — don't retry
+        except _Transient as e:
+            last = e
+        except Exception as e:
+            if getattr(e, "status_code", None) not in RETRY_STATUS:
+                raise LLMError(f"Model call failed: {e}") from e
+            last = e
+
+        if attempt < MAX_ATTEMPTS - 1:           # 1s, 2s, 4s, 8s + jitter
+            time.sleep(2 ** attempt + random.uniform(0, 0.5))
+
+    raise LLMError(
+        f"The model is rate-limited or unavailable after {MAX_ATTEMPTS} attempts. "
+        f"Wait a moment and try again, or set LLM_MODEL to another OpenRouter model. "
+        f"Last error: {last}"
+    )
 
 
 def complete_json(prompt: str, *, system: str = "", temperature: float = 0.2) -> dict:
@@ -157,6 +198,8 @@ def complete_json(prompt: str, *, system: str = "", temperature: float = 0.2) ->
     return json.loads(text[start:end + 1])
 ```
 
+
+
 ### Three details that save time later
 
 **`temperature=0.2` everywhere.** Low but not zero. The evaluation in Phase 8 compares V1 against
@@ -165,10 +208,20 @@ V2, and that comparison is only meaningful if the randomness is held down (NFR-7
 **`complete_json` strips fences and surrounding prose.** Models wrap JSON in ` ```json ` fences
 even when told not to. Handling it in one place means Phases 2, 3, 4 and 6 never deal with it.
 
-**JSON mode needs the word "JSON" in the prompt.** On OpenAI-compatible endpoints,
-`response_format={"type": "json_object"}` is rejected unless the messages mention JSON. Every
-prompt from Phase 2 onward says *"return ONLY a JSON object"*, so this is already satisfied — but
-it is why that wording must not be edited out.
+**There is no JSON mode — the prompts carry it alone.** `ling-3.1-flash` rejects
+`response_format` with a 400 (*"does not support structured-outputs"*), so that parameter is gone.
+Nothing enforces valid JSON at the API level: the wording *"return ONLY a JSON object"* in every
+prompt from Phase 2 onward is now the only thing producing parseable output, backed by
+`complete_json`'s tolerant parsing and Phase 2's repair retry.
+
+> [!WARNING]
+> Do not edit that wording out of any prompt, and do not weaken the schema blocks. With
+> `response_format` unavailable they are load-bearing, not decorative.
+
+**Reasoning is switched off.** `ling-3.1-flash` is a reasoning model, and thinking tokens count
+against `max_tokens` — enough of them and the reply comes back empty. `complete()` disables
+reasoning and raises on an empty or truncated response rather than returning `""` for a caller to
+trip over. The step-by-step work we actually want lives in the prompts, not in hidden thinking.
 
 ## Smoke Test
 
