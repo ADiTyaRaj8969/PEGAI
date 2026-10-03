@@ -6,7 +6,7 @@ Solves the problem privately so that downstream code knows the answer as a
 from dataclasses import dataclass, field
 
 from tutor.llm import complete, complete_json
-from tutor.prompts import SOLVER_SYSTEM, SOLVER_PROMPT, REPAIR_PROMPT
+from tutor.prompts import SOLVER_SYSTEM, SOLVER_PROMPT, REPAIR_PROMPT, TOPIC_LIST
 
 REQUIRED = ["is_math_word_problem", "topic", "steps", "final_answer", "answer_aliases"]
 
@@ -69,7 +69,7 @@ def solve(problem: str) -> Solution:
 
 
 def _solve_uncached(problem: str) -> Solution:
-    prompt = SOLVER_PROMPT.format(problem=problem)
+    prompt = SOLVER_PROMPT.format(problem=problem, topic_list=TOPIC_LIST)
     try:
         data = complete_json(prompt, system=SOLVER_SYSTEM)
         _validate(data)

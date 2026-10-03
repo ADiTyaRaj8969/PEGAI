@@ -53,8 +53,14 @@ classroom platform.
 
 In scope:
 
-- Arithmetic, ratio/proportion, percentage, linear equation, age, work-rate, speed-distance-time,
-  and simple geometry word problems at school level.
+- The full school and pre-university mathematics syllabus — arithmetic and number theory,
+  fractions and decimals, commercial arithmetic (percentage, profit and loss, interest), algebra
+  (expressions, linear and quadratic equations, polynomials, progressions, binomial theorem),
+  sets, relations and functions, geometry and mensuration, coordinate geometry and conic
+  sections, trigonometry and heights and distances, calculus (limits, continuity,
+  differentiability, derivatives, integrals, differential equations), matrices and determinants,
+  vector algebra and three-dimensional geometry, linear programming, statistics, probability,
+  and permutations and combinations. The closed topic list is `tutor.prompts.TOPICS`.
 - Three-level hint generation with enforced answer suppression.
 - Student-working diagnosis and step-localised hinting.
 - Guardrails for off-topic input, malformed model output, and refusal cases.
@@ -62,9 +68,12 @@ In scope:
 
 Out of scope:
 
-- Symbolic/CAS-grade algebra, calculus proofs, LaTeX rendering of handwritten input.
-- Image or handwriting input (OCR).
-- Persistent user accounts, progress tracking across sessions, or a database.
+- Formal proof construction, and CAS-grade symbolic manipulation beyond what the model produces
+  unaided. Symbolic answers are supported, but `answer_numeric` is null for them, so the leak
+  guard falls back to alias matching alone (§4.4).
+- Image or handwriting input (OCR); LaTeX rendering of equations.
+- Persistent user accounts, progress tracking across sessions, or a database. Sessions are held
+  in process memory and are lost on restart.
 
 ### 1.3 Definitions
 
